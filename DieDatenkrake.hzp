@@ -1,0 +1,94 @@
+<!DOCTYPE CrossStudio_Project_File>
+<solution Name="DieDatenkrake" target="8" version="2">
+  <project Name="DieDatenkrake">
+    <configuration Name="Common" Target="LPC1765" arm_architecture="v7M" arm_core_type="Cortex-M3" arm_gcc_target="arm-unknown-eabi" arm_interwork="No" arm_linker_heap_size="8192" arm_linker_process_stack_size="0" arm_linker_stack_size="8192" arm_simulator_memory_simulation_filename="$(TargetsDir)/LPC1000/LPC1000SimulatorMemory.dll" arm_simulator_memory_simulation_parameter="LPC17;0x40000;0x8000;0x8000" arm_target_debug_interface_type="ADIv5" arm_target_loader_parameter="12000000" c_only_additional_options="-fms-extensions" c_preprocessor_definitions="USE_PROCESS_STACK" c_user_include_directories="Base/CDL/Drivers/include;Base/FreeRTOSV7.3.0/FreeRTOS/Source/include;Base/FreeRTOSV7.3.0/FreeRTOS/Source/portable/GCC/ARM_CM3;Base/Core/CM3/DeviceSupport/NXP/LPC17xx;Base/Core/CM3/CoreSupport;Base/directc;.;$(TargetsDir)/LPC1000/include" link_include_startup_code="No" linker_additional_files="$(TargetsDir)/LPC1000/lib/liblpc1000$(LibExt)$(LIB)" linker_memory_map_file="$(TargetsDir)/LPC1000/LPC1763_MemoryMap.xml" linker_output_format="bin" linker_printf_width_precision_supported="No" oscillator_frequency="12MHz" project_directory="" project_type="Executable" property_groups_file_path="$(TargetsDir)/LPC1000/propertyGroups.xml"/>
+    <configuration Name="Flash" Placement="Flash" arm_target_flash_loader_file_path="$(TargetsDir)/LPC1000/Release/Loader_rpc.elf" arm_target_flash_loader_type="LIBMEM RPC Loader" linker_patch_build_command="&quot;$(StudioDir)/bin/crossscript&quot; &quot;load(\&quot;$(TargetsDir)/LPC1000/LPC1000_LinkPatch.js\&quot;);patch(\&quot;$(TargetPath)\&quot;);&quot;" linker_section_placement_file="$(TargetsDir)/LPC1000/flash_placement.xml" target_reset_script="FLASHReset()"/>
+    <configuration Name="RAM" Placement="RAM" linker_section_placement_file="$(TargetsDir)/LPC1000/ram_placement.xml" target_reset_script="SRAMReset()"/>
+    <folder Name="Source Files" file_name="">
+      <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc"/>
+      <file file_name="buffer.c"/>
+      <file file_name="helper.c"/>
+      <file file_name="io.c"/>
+      <file file_name="led.c"/>
+      <file file_name="main.c">
+        <configuration Name="THUMB Flash Release" build_exclude_from_build="No"/>
+        <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
+      </file>
+      <file file_name="printf-stdarg.c"/>
+      <file file_name="stats.c"/>
+      <file file_name="uart.c"/>
+      <file file_name="FreeRTOSConfig.h"/>
+      <file file_name="tests.c"/>
+      <file file_name="tests.h"/>
+      <file file_name="jtag_1149.c"/>
+      <file file_name="cli.c"/>
+      <file file_name="cli.h"/>
+    </folder>
+    <folder Name="System Files" file_name="">
+      <file file_name="$(StudioDir)/source/thumb_crt0.s"/>
+      <file file_name="LPC1700_Startup.s"/>
+      <file file_name="$(TargetsDir)/LPC1000/LPC1700_Target.js">
+        <configuration Name="Common" file_type="Reset Script"/>
+      </file>
+    </folder>
+    <folder Name="CMSIS Files" file_name="">
+      <file file_name="Base/Core/CM3/DeviceSupport/NXP/LPC17xx/LPC17xx.h"/>
+      <file file_name="Base/Core/CM3/DeviceSupport/NXP/LPC17xx/system_LPC17xx.c"/>
+      <file file_name="Base/Core/CM3/DeviceSupport/NXP/LPC17xx/system_LPC17xx.h"/>
+    </folder>
+    <folder Name="CDL" file_name="">
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_clkpwr.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_exti.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_gpio.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_libcfg_default.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_nvic.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_pinsel.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_systick.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_timer.c"/>
+      <file file_name="Base/CDL/Drivers/source/lpc17xx_uart.c"/>
+      <file file_name="Base/CDL/Drivers/include/lpc17xx_libcfg_default.h"/>
+    </folder>
+    <folder Name="FreeRTOS" file_name="">
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/croutine.c"/>
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/list.c"/>
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/queue.c"/>
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/tasks.c"/>
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/timers.c"/>
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/portable/MemMang/heap_4.c"/>
+      <file file_name="Base/FreeRTOSV7.3.0/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c"/>
+    </folder>
+    <folder Name="DirectC" file_name="">
+      <file file_name="Base/directc/dpalg.c"/>
+      <file file_name="Base/directc/dpalg.h"/>
+      <file file_name="Base/directc/dpchain.c"/>
+      <file file_name="Base/directc/dpchain.h"/>
+      <file file_name="Base/directc/dpcom.c"/>
+      <file file_name="Base/directc/dpcom.h"/>
+      <file file_name="Base/directc/dpcore.c"/>
+      <file file_name="Base/directc/dpcore.h"/>
+      <file file_name="Base/directc/dpdef.h"/>
+      <file file_name="Base/directc/dpfrom.c"/>
+      <file file_name="Base/directc/dpfrom.h"/>
+      <file file_name="Base/directc/dpjtag.c"/>
+      <file file_name="Base/directc/dpjtag.h"/>
+      <file file_name="Base/directc/dpnvm.c"/>
+      <file file_name="Base/directc/dpnvm.h"/>
+      <file file_name="Base/directc/dpsecurity.c"/>
+      <file file_name="Base/directc/dpsecurity.h"/>
+      <file file_name="Base/directc/dpuser.c"/>
+      <file file_name="Base/directc/dpuser.h"/>
+      <file file_name="Base/directc/dputil.c"/>
+      <file file_name="Base/directc/dputil.h"/>
+      <file file_name="bitstream/bitstream.c"/>
+    </folder>
+  </project>
+  <configuration Name="THUMB RAM Debug" inherited_configurations="THUMB;RAM;Debug"/>
+  <configuration Name="THUMB" Platform="ARM" arm_instruction_set="THUMB" arm_library_instruction_set="THUMB" c_preprocessor_definitions="__THUMB" hidden="Yes"/>
+  <configuration Name="RAM" c_preprocessor_definitions="__RAM_BUILD" hidden="Yes"/>
+  <configuration Name="Debug" c_preprocessor_definitions="DEBUG" gcc_debugging_level="Level 2" gcc_optimization_level="None" hidden="Yes"/>
+  <configuration Name="THUMB RAM Release" inherited_configurations="THUMB;RAM;Release"/>
+  <configuration Name="Release" c_preprocessor_definitions="NDEBUG;STARTUP_FROM_RESET" gcc_debugging_level="Level 1" gcc_optimization_level="Level 1" hidden="Yes"/>
+  <configuration Name="THUMB Flash Debug" inherited_configurations="THUMB;Flash;Debug"/>
+  <configuration Name="Flash" c_preprocessor_definitions="__FLASH_BUILD" hidden="Yes"/>
+  <configuration Name="THUMB Flash Release" inherited_configurations="THUMB;Flash;Release"/>
+</solution>
