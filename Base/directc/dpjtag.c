@@ -26,7 +26,7 @@ DPUCHAR data_buf;
 DPUCHAR bit_buf;
 
 /****************************************************************************
-* Purpose:  This function is used to shift JTAG states. 
+* Purpose:  This function is used to shift JTAG states.
 ****************************************************************************/
 void IRSCAN_in(void)
 {
@@ -80,7 +80,7 @@ void dp_get_and_DRSCAN_in_out(DPUCHAR Variable_ID,DPUCHAR total_bits_to_shift, D
 }
 
 /****************************************************************************
-* Purpose:  This function is used to shift JTAG states. 
+* Purpose:  This function is used to shift JTAG states.
 ****************************************************************************/
 void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
 {
@@ -89,13 +89,13 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
     if (target_state != current_jtag_state)
     {
         switch (target_state) {
-            
+
             case JTAG_TEST_LOGIC_RESET:
             dp_jtag_init();
             count = 5u;
             tms_bits = 0x1Fu;
             break;
-            
+
             case JTAG_SHIFT_DR:
             if ((current_jtag_state == JTAG_TEST_LOGIC_RESET) || (current_jtag_state == JTAG_RUN_TEST_IDLE))
             {
@@ -107,11 +107,11 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
                 count = 5u;
                 tms_bits = 0x7u;
             }
-            else 
+            else
             {
             }
             break;
-            
+
             case JTAG_SHIFT_IR:
             if ((current_jtag_state == JTAG_TEST_LOGIC_RESET) || (current_jtag_state == JTAG_RUN_TEST_IDLE))
             {
@@ -128,11 +128,11 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
                 count = 4u;
                 tms_bits = 0x3u;
             }
-            else 
+            else
             {
             }
             break;
-            
+
             case JTAG_RUN_TEST_IDLE:
             if (current_jtag_state == JTAG_TEST_LOGIC_RESET)
             {
@@ -154,11 +154,11 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
                 count = 3u;
                 tms_bits = 0x3u;
             }
-            else 
+            else
             {
             }
             break;
-            
+
             case JTAG_PAUSE_IR:
             if (current_jtag_state == JTAG_EXIT1_IR)
             {
@@ -166,7 +166,7 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
                 tms_bits = 0x0u;
             }
             break;
-            
+
             case JTAG_PAUSE_DR:
             if (current_jtag_state == JTAG_EXIT1_DR)
             {
@@ -178,11 +178,11 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
                 count = 4u;
                 tms_bits = 0x5u;
             }
-            else 
+            else
             {
             }
             break;
-            
+
             case JTAG_UPDATE_DR:
             if ((current_jtag_state == JTAG_EXIT1_DR) || (current_jtag_state == JTAG_EXIT1_IR))
             {
@@ -194,27 +194,27 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
                 count = 2u;
                 tms_bits = 0x3u;
             }
-            else 
+            else
             {
             }
             break;
-            
+
             case JTAG_CAPTURE_DR:
             if (current_jtag_state == JTAG_PAUSE_IR)
             {
                 count = 5u;
                 tms_bits = 0xeu;
             }
-            else 
+            else
             {
             }
             break;
-            
+
             default:
             error_code = DPE_JTAG_STATE_NOT_HANDLED;
             break;
         }
-        
+
         for (global_jtag_i = 0u; global_jtag_i < count; global_jtag_i++)
         {
             dp_jtag_tms(tms_bits&0x1u);
@@ -222,7 +222,7 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
         }
         current_jtag_state = target_state;
     }
-    for (global_jtag_i=0u; global_jtag_i < cycles; global_jtag_i++) 
+    for (global_jtag_i=0u; global_jtag_i < cycles; global_jtag_i++)
     {
         dp_jtag_tms(0u);
     }
@@ -232,7 +232,7 @@ void goto_jtag_state(DPUCHAR target_state, DPUCHAR cycles)
 
 void dp_wait_cycles(DPUCHAR cycles)
 {
-    for (global_jtag_i=0U; global_jtag_i < cycles; global_jtag_i++) 
+    for (global_jtag_i=0U; global_jtag_i < cycles; global_jtag_i++)
     {
         dp_jtag_tms(0U);
     }
@@ -242,7 +242,7 @@ void dp_wait_cycles(DPUCHAR cycles)
 #ifndef CHAIN_SUPPORT
 /****************************************************************************
 * Purpose: clock data stored in tdi_data into the device.
-* terminate is a flag needed to determine if shifting to pause state should 
+* terminate is a flag needed to determine if shifting to pause state should
 * be done with the last bit shift.
 ****************************************************************************/
 void dp_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR terminate)
@@ -253,7 +253,7 @@ void dp_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR
     {
         data_buf = 0U;
     }
-    else 
+    else
     {
         data_buf = tdi_data[idx] >> ((DPUCHAR)(start_bit & 0x7U));
     }
@@ -274,8 +274,8 @@ void dp_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR
             {
                 data_buf = 0U;
             }
-            else 
-            {   
+            else
+            {
                 data_buf = tdi_data[idx];
             }
         }
@@ -300,8 +300,8 @@ void dp_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR
 /****************************************************************************
 * Purpose:  clock data stored in tdi_data into the device.
 *           capture data coming out of tdo into tdo_data.
-* This function will always clock data starting bit postion 0.  
-* Jtag state machine will always be set the pauseDR or pauseIR state at the 
+* This function will always clock data starting bit postion 0.
+* Jtag state machine will always be set the pauseDR or pauseIR state at the
 * end of the shift.
 ****************************************************************************/
 void dp_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[])
@@ -313,11 +313,11 @@ void dp_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[])
     {
         data_buf = 0U;
     }
-    else 
+    else
     {
         data_buf = tdi_data[idx];
     }
-    
+
     while (--num_bits)
     {
         if ((bit_buf & 0xffU) == 0U )
@@ -329,7 +329,7 @@ void dp_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[])
             {
                 data_buf = 0U;
             }
-            else 
+            else
             {
                 data_buf = tdi_data[idx];
             }
@@ -350,7 +350,7 @@ void dp_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[])
         {
             data_buf = 0U;
         }
-        else 
+        else
         {
             data_buf = tdi_data[idx];
         }
@@ -383,24 +383,24 @@ void dp_get_and_shift_in(DPUCHAR Variable_ID,DPUINT total_bits_to_shift, DPULONG
     DPUCHAR terminate;
     page_start_bit_index = start_bit_index & 0x7U;
     requested_bytes =  (page_start_bit_index + total_bits_to_shift + 7U) >> 3U;
-    
+
     terminate = 0U;
     while (requested_bytes)
     {
         page_buffer_ptr = dp_get_data(Variable_ID,start_bit_index);
-        
+
         if (return_bytes >= requested_bytes )
         {
             return_bytes = requested_bytes;
             bits_to_shift = total_bits_to_shift;
             terminate = 1U;
         }
-        else 
+        else
         {
             bits_to_shift = (DPUCHAR) (return_bytes * 8U - page_start_bit_index);
         }
         dp_shift_in(page_start_bit_index, bits_to_shift, page_buffer_ptr,terminate);
-        
+
         requested_bytes = requested_bytes - return_bytes;
         total_bits_to_shift = total_bits_to_shift - bits_to_shift;
         start_bit_index += bits_to_shift;
@@ -410,14 +410,14 @@ void dp_get_and_shift_in(DPUCHAR Variable_ID,DPUINT total_bits_to_shift, DPULONG
 }
 /****************************************************************************
 * Purpose:  Get the data block specified by Variable_ID from the image dat
-* file and clocks it into the device.  Capture the data coming out of tdo 
+* file and clocks it into the device.  Capture the data coming out of tdo
 * into tdo_data
 ****************************************************************************/
 void dp_get_and_shift_in_out(DPUCHAR Variable_ID,DPUCHAR total_bits_to_shift, DPULONG start_bit_index,DPUCHAR* tdo_data)
 {
     requested_bytes =  ( ( (DPULONG) total_bits_to_shift ) + 7U) >> 3U;
     page_buffer_ptr = dp_get_data(Variable_ID,start_bit_index);
-    
+
     if (return_bytes >= requested_bytes )
     {
         return_bytes = requested_bytes;
@@ -429,7 +429,7 @@ void dp_get_and_shift_in_out(DPUCHAR Variable_ID,DPUCHAR total_bits_to_shift, DP
         dp_display_text("\r\nError: Page buffer size is not big enough...");
         #endif
     }
-    
+
     return;
 }
 #endif

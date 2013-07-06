@@ -27,12 +27,12 @@ extern DPULONG requested_bytes;
 extern DPUCHAR page_global_buffer[PAGE_BUFFER_SIZE];  /* Page_global_buffer simulating the global_buf1fer that is accessible by DirectC code*/
 #endif
 
-/* 
+/*
 * Data block ID definitions
 */
 #define Header_ID                 0u
 #define ACT_UROW_DESIGN_NAME_ID   1u
-#define BsrPattern_ID             2u  
+#define BsrPattern_ID             2u
 #define SILSIG_ID                 3u		
 #define CHECKSUM_ID               4u
 #define datastream_ID             5u
@@ -42,14 +42,14 @@ extern DPUCHAR page_global_buffer[PAGE_BUFFER_SIZE];  /* Page_global_buffer simu
 
 /* These defintions are the same as NVM block zoro.  They are defined to aviod confusion when pogram and verify NVM functions are called. */
 #define NVM_OFFSET                5u
-#define NvmParSize_ID             9u 
+#define NvmParSize_ID             9u
 #define NumOfPart_ID             10u
 #define NvmAddr_ID               11u
 #define NvmData_ID               12u
 #define NvmProtect_ID            13u
 
 
-#define NvmParSize_0_ID           9u 
+#define NvmParSize_0_ID           9u
 #define NumOfPart_0_ID           10u
 #define NvmAddr_0_ID             11u
 #define NvmData_0_ID             12u

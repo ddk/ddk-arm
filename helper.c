@@ -6,19 +6,12 @@
  * All rights reserved.
  *
  * This file is part of Die Datenkrake (DDK).
- * 
- * Die Datenkrake is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
-
- * Die Datenkrake is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Die Datenkrake.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <dmitry at nedos dot net> and <ths at modzero dot ch> wrote this file. As
+ * long as you retain this notice you can do whatever you want with this stuff.
+ * If we meet some day, and you think this stuff is worth it, you can buy us a
+ * beer in return. Die Datenkrake Project.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -93,7 +86,7 @@ void print_hex_dword(int32_t d)
 
 void print_hex_buf(char *s, uint32_t l)
 {
-    
+
     while(l--) {
         putchar( _tab[ (*s >> 4) & 0xF ] );
         putchar( _tab[ (*s >> 0) & 0xF ] );
@@ -118,7 +111,7 @@ void print_hex_ascii_line(const unsigned char *payload, int slen, int offset)
    ch2 = ch = payload;
 
   do {
-      
+
       /* offset */
       //printf("%05x   ", offset);
       print_hex_word(offset & 0xffff);
@@ -129,7 +122,7 @@ void print_hex_ascii_line(const unsigned char *payload, int slen, int offset)
          len=slen;
 
       for(i = 0; i < len; i++) {
-         
+
          //printf("%02x ", *ch);
 
          print_hex_byte(*ch);
@@ -143,16 +136,16 @@ void print_hex_ascii_line(const unsigned char *payload, int slen, int offset)
       /* print space to handle line less than 8 bytes */
       if (len < 8)
          putchar(' ');
-      
+
       /* fill hex gap with spaces if not full line */
       if (len < 16) {
          gap = 16 - len;
          for (i = 0; i < gap; i++) {
             printf("   ");
          }
-      }          
+      }
       printf("   ");
-      
+
       /* ascii (if printable) */
       for(i = 0; i < len; i++) {
          if (isprint(*ch2)){
@@ -167,7 +160,7 @@ void print_hex_ascii_line(const unsigned char *payload, int slen, int offset)
       offset += len;
    } while( slen > 0 ) ;
 
-  
+
    return;
 }
 
@@ -178,7 +171,7 @@ void print_hex_ascii_line(const unsigned char *payload, int slen, int offset)
 //-----------------------------------------------------------------------------
 
 void _Delay (volatile unsigned long a) { while (--a!=0); }
-   
+
 
 
 //-----------------------------------------------------------------------------
@@ -189,24 +182,24 @@ static void banner(void)
    int cols = 70;
    int rows = 25;
    int i = 0;
-   
+
    putchar('\n');
-   
+
    for (i=0;i<rows;i++)
       putchar('\n');
-   
+
    for (i=0;i<cols;i++)
       putchar('*');
       putchar('\n');
 
-   printf("* Booting  %s %s\n", 
+   printf("* Booting  %s %s\n",
       PROJECT_NAME, PROJECT_REVISION);
-   printf("* Built: %s %s\n", 
+   printf("* Built: %s %s\n",
       build_date, build_time);
 
    printf("* datenkrake (at) dev . io -- ://datenkrake.org/\n");
    printf("* Oh hai!\n");
-         
+
    for (i=0;i<cols;i++)
       putchar('*');
       putchar('\n');
@@ -220,7 +213,7 @@ static void banner(void)
    printf("*   Current CPU Clock Frequency (Hz):         %d\n", liblpc1000_lpc17xx_get_cclk(OSCILLATOR_CLOCK_FREQUENCY) );
    printf("*   Current Timer Ticks Per Second:           %d\n", ctl_get_ticks_per_second());
 #endif
-   
+
    for (i=0;i<cols;i++)
       putchar('*');
       putchar('\n');
@@ -244,7 +237,7 @@ char *strtrim (char *s)
 
 char * index(char *str, char c)
 {
-   while(*str != c) 
+   while(*str != c)
       if(*str == 0)
          return str;
       else

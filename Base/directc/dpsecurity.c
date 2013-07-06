@@ -57,10 +57,10 @@ void dp_erase_security(void)
     global_buf1[0] = UROW_ERASE_BITS_BYTE0;
     global_buf1[1] = UROW_ERASE_BITS_BYTE1;
     global_buf1[2] = UROW_ERASE_BITS_BYTE2;
-    
+
     /* This is for FROM erase.  Need to get which bits are set to erase from the data file. */
     global_buf1[0] |= 0xeu;
-    
+
     dp_exe_erase();
     return;
 }
@@ -91,7 +91,7 @@ void dp_program_security(void)
             }
         }
     }
-    
+
     return;
 }
 
@@ -103,7 +103,7 @@ void dp_write_sec_key(void)
     dp_get_and_DRSCAN_in(UKEY_ID, UKEY_BIT_LENGTH, 0u);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_UKEY_CYCLES);
     dp_poll_device();
-    
+
     return;
 }
 
@@ -113,12 +113,12 @@ void dp_write_enc_key(void)
     {
         global_uchar = 0u;
         dp_set_aes_mode();
-    }    
+    }
     opcode = ISC_PROGRAM_DMK;
     IRSCAN_in();
     dp_get_and_DRSCAN_in(DMK_ID, DMK_BIT_LENGTH, 0u);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_DMK_CYCLES);
-    
+
     dp_poll_device();
     if (error_code == DPE_SUCCESS)
     {
@@ -132,10 +132,10 @@ void dp_program_ulock(void)
 {
     DPUCHAR index;
     DPUCHAR mask;
-    
-    
+
+
     dp_flush_global_buf1();
-    
+
     if (device_family & (AFS_BIT | SFS_BIT))
     {
         global_uint = ULOCK_AFS_BIT_LENGTH;
@@ -166,23 +166,23 @@ void dp_program_ulock(void)
         global_buf1[4] = (DPUCHAR) (global_ulong >> 20u);
         global_buf1[5] = (DPUCHAR) (global_ulong >> 28u);
     }
-    
+
     opcode = ISC_PROGRAM_SECURITY;
     IRSCAN_in();
     DRSCAN_in(0u, global_uint, global_buf1);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_SECURITY_CYCLES);
-    
+
     dp_poll_device();
     if (error_code == DPE_SUCCESS)
     {
         opcode = ISC_QUERY_SECURITY;
         IRSCAN_in();
         goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_QUERY_SECURITY_CYCLES);
-        
+
         dp_flush_global_buf2();
         DRSCAN_out(global_uint, (DPUCHAR*)DPNULL, global_buf2);
         if (device_family & (AFS_BIT | SFS_BIT))
-        {    
+        {
             for (index = 0u; index <= 6u; index++)
             {
                 if (index == 2u)
@@ -200,8 +200,8 @@ void dp_program_ulock(void)
                 }
             }
         }
-        else 
-        {    
+        else
+        {
             for (index = 0u; index <= 5u; index++)
             {
                 if (index == 1u)
@@ -224,8 +224,8 @@ void dp_program_ulock(void)
             }
         }
     }
-    
-    
+
+
     return;
 }
 #endif
@@ -235,32 +235,32 @@ void dp_match_security(void)
 {
     opcode = ISC_MATCH_UKEY;
     IRSCAN_in();
-    
+
     dp_get_and_DRSCAN_in(UKEY_ID, UKEY_BIT_LENGTH, 0u);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_MATCH_UKEY_CYCLES);
     dp_delay(ISC_MATCH_UKEY_DELAY);
-    
+
     DRSCAN_out(DMK_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
     if ((global_buf1[0] & 0x3u) == 0x1u)
     {
         device_security_flags |= SEC_KEY_OK;
     }
-    
+
     if (dat_support_status & SEC_DAT_SUPPORT_BIT)
     {
-        
+
         global_ulong = dp_get_bytes(UKEY_ID,0u, 4u);
         global_ulong |= dp_get_bytes(UKEY_ID,4u, 4u);
         global_ulong |= dp_get_bytes(UKEY_ID,8u, 4u);
         global_ulong |= dp_get_bytes(UKEY_ID,12u, 4u);
-        
-        
+
+
         if (global_ulong == 0u)
         {
             device_security_flags |= PERM_LOCK_BIT;
         }
     }
-    
+
     return;
 }
 
@@ -271,16 +271,16 @@ void dp_verify_enc_key(void)
         global_uchar = 0u;
         dp_set_aes_mode();
     }
-    
+
     dp_init_aes();
     opcode = ISC_VERIFY_DMK;
     IRSCAN_in();
     dp_get_and_DRSCAN_in(KDATA_ID, DMK_BIT_LENGTH, 0u);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY_DMK_CYCLES);
     dp_delay(ISC_VERIFY_DMK_DELAY);
-    
+
     DRSCAN_out(DMK_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
-    
+
     if ((global_buf1[15] & 0xC0u) != 0xC0u)
     {
         error_code = DPE_DMK_VERIFY_ERROR;
@@ -293,7 +293,7 @@ void dp_read_device_security(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nReading Security...");
     #endif
-    
+
     if (device_family & (AFS_BIT | SFS_BIT))
     {
         global_uint = ULOCK_AFS_BIT_LENGTH;
@@ -311,30 +311,30 @@ void dp_read_device_security(void)
     DRSCAN_out(global_uint, (DPUCHAR*)DPNULL, global_buf2);
     if (device_family & (AFS_BIT | SFS_BIT))
     {
-        device_security_flags |=   (DPULONG) global_buf2[0] | 
-        ((DPULONG) global_buf2[1] << 8) | 
+        device_security_flags |=   (DPULONG) global_buf2[0] |
+        ((DPULONG) global_buf2[1] << 8) |
         ((DPULONG) global_buf2[2] << 16) ;
     }
     /* This step is to line up the security flags for AFS and A3P.  This is usedful so that the mask bits are the same for both families */
     else
     {
-        device_security_flags |=  (DPULONG) global_buf2[0] << 12 | 
+        device_security_flags |=  (DPULONG) global_buf2[0] << 12 |
         (DPULONG) (global_buf2[1] & 0xFu) << 20;
     }
-    
+
     return;
 }
 #ifdef SILSIG_SUPPORT
 void dp_program_silsig(void)
 {
-    
+
     global_ulong = dp_get_bytes(SILSIG_ID,0u,4u);
     if (global_ulong)
     {
         #ifdef ENABLE_DEBUG
         dp_display_text("\r\nProgramming SILSIG...");
         #endif
-        
+
         if (device_family & (AFS_BIT | SFS_BIT))
         {
             global_uint = ULOCK_AFS_BIT_LENGTH;
@@ -359,21 +359,21 @@ void dp_program_silsig(void)
             global_buf1[4] = (DPUCHAR) (global_ulong >> 20);
             global_buf1[5] = (DPUCHAR) (global_ulong >> 28);
         }
-        
-        
+
+
         opcode = ISC_PROGRAM_SECURITY;
         IRSCAN_in();
         DRSCAN_in(0u, global_uint, global_buf1);
         goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_SECURITY_CYCLES);
-        
+
         dp_poll_device();
         if (error_code != DPE_SUCCESS)
         {
             error_code = DPE_ULOCK_ERROR;
         }
-        
+
     }
-    
+
     return;
 }
 #endif
@@ -382,22 +382,22 @@ void dp_program_silsig(void)
 void dp_check_dual_key(void)
 {
     if (
-    ((device_ID & AXXE600X_ID_MASK) == (AXXE600X_ID & AXXE600X_ID_MASK)) || 
-    ((device_ID & AXXE1500X_ID_MASK) == (AXXE1500X_ID & AXXE1500X_ID_MASK)) || 
-    ((device_ID & AXXE3000X_ID_MASK) == (AXXE3000X_ID & AXXE3000X_ID_MASK)) || 
+    ((device_ID & AXXE600X_ID_MASK) == (AXXE600X_ID & AXXE600X_ID_MASK)) ||
+    ((device_ID & AXXE1500X_ID_MASK) == (AXXE1500X_ID & AXXE1500X_ID_MASK)) ||
+    ((device_ID & AXXE3000X_ID_MASK) == (AXXE3000X_ID & AXXE3000X_ID_MASK)) ||
     ( ( (device_ID & AFS600_ID_MASK) == (AFS600_ID & AFS600_ID_MASK) ) && (device_rev > 1u) ) ||
     ((device_ID & AFS1500_ID_MASK) == (AFS1500_ID & AFS1500_ID_MASK)))
     {
         #ifdef ENABLE_DEBUG
         dp_display_text("\r\nChecking for Dual Key Device...");
         #endif
-        
+
         global_uchar = 1u;
         dp_set_aes_mode();
         dp_init_aes();
         dp_verify_fc_dmk();
         /* Need to reset to DMK mode */
-        
+
         global_uchar = 0u;
         dp_set_aes_mode();
         dp_init_aes();
@@ -410,19 +410,19 @@ void dp_check_dual_key(void)
 
 void dp_verify_id_dmk(void)
 {
-    if ( 
-        ((device_ID & AXX030X_ID_MASK) != (AXX030X_ID & AXX030X_ID_MASK)) && 
+    if (
+        ((device_ID & AXX030X_ID_MASK) != (AXX030X_ID & AXX030X_ID_MASK)) &&
         ((device_ID & AGLP030X_ID_MASK) != (AGLP030X_ID & AGLP030X_ID_MASK)) &&
-        (device_ID != AXXN010X_ID) && 
+        (device_ID != AXXN010X_ID) &&
         (device_ID != AXXN020X_ID)
-        ) 
+        )
     {
         if (device_family & DUAL_KEY_BIT)
         {
             global_uchar = 1u;
             dp_set_aes_mode();
         }
-        
+
         dp_init_aes();
         dp_verify_m7_dmk();
         if(error_code == DPE_SUCCESS)
@@ -468,14 +468,14 @@ void dp_verify_m7_dmk(void)
     global_buf1[13]=M7KDATA13;
     global_buf1[14]=M7KDATA14;
     global_buf1[15]=M7KDATA15;
-    
+
     opcode = ISC_VERIFY_DMK;
     IRSCAN_in();
     DRSCAN_in(0u, DMK_BIT_LENGTH, global_buf1);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY_DMK_CYCLES);
     dp_delay(ISC_VERIFY_DMK_DELAY);
     DRSCAN_out(DMK_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf2);
-    
+
     if ((global_buf2[15] & 0x80u) == 0u)
     {
         #ifdef ENABLE_DEBUG
@@ -490,13 +490,13 @@ void dp_verify_m7_dmk(void)
         #endif
         device_security_flags |= M7_DEVICE;
     }
-    else 
+    else
     {
     }
     if (error_code == DPE_SUCCESS)
     {
         global_uchar = (DPUCHAR) dp_get_bytes(Header_ID,M_DEVICE_OFFSET,1u);
-        
+
         if ((device_security_flags & M7_DEVICE) && (global_uchar != M7))
         {
             #ifdef ENABLE_DEBUG
@@ -536,7 +536,7 @@ void dp_verify_m1_dmk(void)
     global_buf1[13]=M1KDATA13;
     global_buf1[14]=M1KDATA14;
     global_buf1[15]=M1KDATA15;
-    
+
     opcode = ISC_VERIFY_DMK;
     IRSCAN_in();
     DRSCAN_in(0u, DMK_BIT_LENGTH, global_buf1);
@@ -563,7 +563,7 @@ void dp_verify_m1_dmk(void)
     if (error_code == DPE_SUCCESS)
     {
         global_uchar = (DPUCHAR) dp_get_bytes(Header_ID,M_DEVICE_OFFSET,1u);
-        
+
         if ((device_security_flags & M1_DEVICE) && (global_uchar != M1))
         {
             #ifdef ENABLE_DEBUG
@@ -603,14 +603,14 @@ void dp_verify_p1_dmk(void)
     global_buf1[13]=P1KDATA13;
     global_buf1[14]=P1KDATA14;
     global_buf1[15]=P1KDATA15;
-    
+
     opcode = ISC_VERIFY_DMK;
     IRSCAN_in();
     DRSCAN_in(0u, DMK_BIT_LENGTH, global_buf1);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY_DMK_CYCLES);
     dp_delay(ISC_VERIFY_DMK_DELAY);
-    DRSCAN_out(DMK_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf2);    
-    
+    DRSCAN_out(DMK_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf2);
+
     if ((global_buf2[15] & 0x80u) == 0u)
     {
         #ifdef ENABLE_DEBUG
@@ -628,11 +628,11 @@ void dp_verify_p1_dmk(void)
     else
     {
     }
-    
+
     if (error_code == DPE_SUCCESS)
     {
         global_uchar = (DPUCHAR) dp_get_bytes(Header_ID,M_DEVICE_OFFSET,1u);
-        
+
         if ((device_security_flags & P1_DEVICE) && (global_uchar != P1))
         {
             #ifdef ENABLE_DEBUG
@@ -675,14 +675,14 @@ void dp_verify_p1_dmk(void)
     global_buf1[13]=FCBYTE13;
     global_buf1[14]=FCBYTE14;
     global_buf1[15]=FCBYTE15;
-    
+
     opcode = ISC_VERIFY_DMK;
     IRSCAN_in();
     DRSCAN_in(0u, DMK_BIT_LENGTH, global_buf1);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY_DMK_CYCLES);
     dp_delay(ISC_VERIFY_DMK_DELAY);
     DRSCAN_out(DMK_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf2);
-    
+
     if ((global_buf2[15] & 0x80u) == 0u)
     {
         #ifdef ENABLE_DEBUG
@@ -706,7 +706,7 @@ void dp_verify_p1_dmk(void)
             }
         }
     }
-    else 
+    else
     {
         #ifdef ENABLE_DEBUG
         dp_display_text("\r\nDual Key Device Detected...");
@@ -718,7 +718,7 @@ void dp_verify_p1_dmk(void)
             {
                 AES_mode_value = 2u;
             }
-            else 
+            else
             {
                 AES_mode_value = 1u;
             }
@@ -735,7 +735,7 @@ void dp_verify_p1_dmk(void)
             }
         }
     }
-    
+
     return;
 }
 #endif

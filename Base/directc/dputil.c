@@ -45,14 +45,14 @@ void dp_init_vars(void)
     #ifndef ENABLE_CODE_SPACE_OPTIMIZATION
     dat_version = 0u;
     #endif
-    
+
     device_security_flags = 0u;
     error_code = DPE_SUCCESS;
     return;
 }
 void dp_get_dat_support_status(void)
 {
-    
+
     global_uint = 1u;
     dat_support_status = 0u;
     for (global_ulong = 0u;global_ulong < 16u ;global_ulong ++)
@@ -65,14 +65,14 @@ void dp_get_dat_support_status(void)
         }
         global_uint <<= 1u;
     }
-    
+
     return;
 }
 
 void dp_check_dat_support_version(void)
 {
     global_uchar = (DPUCHAR) dp_get_bytes(Header_ID, HEADER_SIZE_OFFSET, 1u);
-    
+
     /* The header size of files generated from designer V8.6 is 69 vs. 56 from datgen and version 8.5 */
     if (global_uchar == 56u)
     {
@@ -85,30 +85,30 @@ void dp_check_dat_support_version(void)
         dat_version = V85_DAT;
         #endif
     }
-    
+
 }
 /*
 * Module: dp_check_image_crc
-* 		purpose: Performs crc on the entire image.  
-* Return value: 
-* 	DPINT: User defined integer value which reports DPE_SUCCESS if there is a match or DPE_CRC_MISMATCH if failed. 
-* 
+* 		purpose: Performs crc on the entire image.
+* Return value:
+* 	DPINT: User defined integer value which reports DPE_SUCCESS if there is a match or DPE_CRC_MISMATCH if failed.
+*
 */
 void dp_check_image_crc(void)
 {
     DPUINT expected_crc;
-    
-    #ifdef ENABLE_DEBUG        
+
+    #ifdef ENABLE_DEBUG
     dp_display_text("\r\nChecking data CRC...");
     #endif
-    
+
     global_ulong = dp_get_bytes(Header_ID,0u,4u);
     if ( (global_ulong == 0x69736544u) || (global_ulong == 0x65746341u) )
     {
         requested_bytes = 0u;
         image_size = dp_get_bytes(Header_ID,IMAGE_SIZE_OFFSET,4u);
         expected_crc = (DPUINT) dp_get_bytes(Header_ID,image_size - 2u,2u);
-        #ifdef ENABLE_DEBUG        
+        #ifdef ENABLE_DEBUG
         dp_display_text("\r\nExpected CRC=");
         dp_display_value( expected_crc ,HEX);
         #endif
@@ -119,9 +119,9 @@ void dp_check_image_crc(void)
             dp_display_text("\r\nData file is not loaded... \r\n");
             #endif
         }
-        else 
+        else
         {
-            #ifdef ENABLE_DEBUG      
+            #ifdef ENABLE_DEBUG
             dp_display_text("\r\nCalculating actual CRC...");
             #endif
             /* Global_uint is used to hold the value of the calculated CRC */
@@ -162,7 +162,7 @@ void dp_check_image_crc(void)
         #endif
         error_code = DPE_CRC_MISMATCH;
     }
-    
+
     return;
 }
 

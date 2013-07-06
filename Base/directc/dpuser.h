@@ -17,9 +17,9 @@
 
 /*************** Hardware related constants *****************************/
 /*
-* User Attention: 
-* Port 1 - Bit assignments in the hardware JTAG port register 
-* 
+* User Attention:
+* Port 1 - Bit assignments in the hardware JTAG port register
+*
 */
 #define ddk_TCK  (1<<0)
 #define ddk_TDI  (1<<8)
@@ -55,7 +55,7 @@
 #define ENABLE_DAS_SUPPORT
 /* #define USE_PAGING */
 /* #define CHAIN_SUPPORT */
-/* Enable BSR_SAMPLE switch maintains the last known state of the IOs regardless 
+/* Enable BSR_SAMPLE switch maintains the last known state of the IOs regardless
 *  of the data file setting. */
 /* #define BSR_SAMPLE */
 
@@ -66,8 +66,8 @@
 /* #define DISABLE_NVM_SPECIFIC_ACTIONS */
 /* #define DISABLE_SEC_SPECIFIC_ACTIONS */
 
-/* This option could be used for performing progam_nvm_active_array and 
-verify_nvm_active_array actions. 
+/* This option could be used for performing progam_nvm_active_array and
+verify_nvm_active_array actions.
 Set FORCE_NVM_ACCESS to 1 to force NVM access */
 #define FORCE_NVM_ACCESS 0u
 

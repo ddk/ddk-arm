@@ -32,7 +32,7 @@
  *
  * NO_SYSTEM_INIT
  *
- *   If defined, the SystemInit() function will NOT be called. By default 
+ *   If defined, the SystemInit() function will NOT be called. By default
  *   SystemInit() is called after reset to enable the clocks and memories to
  *   be initialised prior to any C startup initialisation.
  *
@@ -75,7 +75,7 @@ _vectors:
   .word DebugMon_Handler
   .word 0 // Reserved
   .word xPortPendSVHandler      //PendSV_Handler
-  .word SysTick_Handler 
+  .word SysTick_Handler
   .word WDT_IRQHandler
   .word TIMER0_IRQHandler
   .word TIMER1_IRQHandler
@@ -134,10 +134,10 @@ DEFAULT_ISR_HANDLER HardFault_Handler
 DEFAULT_ISR_HANDLER MemManage_Handler
 DEFAULT_ISR_HANDLER BusFault_Handler
 DEFAULT_ISR_HANDLER UsageFault_Handler
-DEFAULT_ISR_HANDLER vPortSVCHandler     // SVC_Handler 
+DEFAULT_ISR_HANDLER vPortSVCHandler     // SVC_Handler
 DEFAULT_ISR_HANDLER DebugMon_Handler
 DEFAULT_ISR_HANDLER xPortPendSVHandler  // PendSV_Handler
-DEFAULT_ISR_HANDLER SysTick_Handler 
+DEFAULT_ISR_HANDLER SysTick_Handler
 DEFAULT_ISR_HANDLER WDT_IRQHandler
 DEFAULT_ISR_HANDLER TIMER0_IRQHandler
 DEFAULT_ISR_HANDLER TIMER1_IRQHandler

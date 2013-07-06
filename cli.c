@@ -6,19 +6,12 @@
  * All rights reserved.
  *
  * This file is part of Die Datenkrake (DDK).
- * 
- * Die Datenkrake is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
-
- * Die Datenkrake is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Die Datenkrake.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <dmitry at nedos dot net> and <ths at modzero dot ch> wrote this file. As
+ * long as you retain this notice you can do whatever you want with this stuff.
+ * If we meet some day, and you think this stuff is worth it, you can buy us a
+ * beer in return. Die Datenkrake Project.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -36,7 +29,7 @@
  *
  * *********************************************************************** * * * * * * * * * * *
  * Parts of the argument dispatching routines were taken from the LPC2148 demo code v1.44
- *   available at http://jcwren.com/arm/. Credits and thanks to jcwren _-at-_ jcwren.com - 
+ *   available at http://jcwren.com/arm/. Credits and thanks to jcwren _-at-_ jcwren.com -
  *   i didn't even know her/his real name. -- Thorsten, Berlin, Sept. 8th 2010
  * *********************************************************************** * * * * * * * * * * *
  */
@@ -209,7 +202,7 @@ static int __attribute__ ((unused)) prv_cli_buf_on (int argc __attribute__ ((unu
         }
         printf("Buffer %d enabled.\n", buf);
     }
-    
+
     return 0;
 }
 
@@ -286,7 +279,7 @@ static int __attribute__ ((unused)) prv_cli_led_set (int argc __attribute__ ((un
                 break;
         }
     }
-    
+
     return 0;
 }
 
@@ -378,7 +371,7 @@ static int __attribute__ ((unused)) prv_cli_fpga_on (int argc __attribute__ ((un
 // ******************************************************** ** ** **  **    *       *         *               *
 static int __attribute__ ((unused)) prv_cli_buf_en (int argc __attribute__ ((unused)), portCHAR **argv __attribute__ ((unused)))
 {
-   
+
     unsigned int buf = strtol(argv[0], NULL, 10) & 0xff;
 
     switch(buf) {
@@ -409,7 +402,7 @@ static int __attribute__ ((unused)) prv_cli_buf_en (int argc __attribute__ ((unu
 // ******************************************************** ** ** **  **    *       *         *               *
 static int __attribute__ ((unused)) prv_cli_buf_dis (int argc __attribute__ ((unused)), portCHAR **argv __attribute__ ((unused)))
 {
-   
+
     unsigned int buf = strtol(argv[0], NULL, 10) & 0xff;
 
     switch(buf) {
@@ -539,7 +532,7 @@ static int __attribute__ ((unused)) prv_cli_led_ctl (int argc __attribute__ ((un
 static int __attribute__ ((unused)) prv_cli_led_ctl_all (int argc __attribute__ ((unused)), portCHAR **argv __attribute__ ((unused)))
 {
     unsigned int val = strtol(argv[0], NULL, 10) & 0xff;
-    
+
     if(val) {
         led1_set();
         led2_set();
@@ -727,7 +720,7 @@ int argsGetLine (int fd __attribute__ ((unused)), unsigned char *buffer, int buf
 
     c = getchar();
     //if(read(0, &c, sizeof(c)) ==sizeof(c))
-    
+
     if (c != EOF)
     {
       switch (c)
@@ -743,7 +736,7 @@ int argsGetLine (int fd __attribute__ ((unused)), unsigned char *buffer, int buf
             *--p = '\0';
           printf ("\x08 \x08");
           break;
-        
+
         // BS
         case 0x08:
           if (p > buffer)
@@ -766,15 +759,15 @@ int argsGetLine (int fd __attribute__ ((unused)), unsigned char *buffer, int buf
           *buffer = '\0';
           return 1;
 
-        default : 
+        default :
           if (p < buffer + bufferLength - 1 && c >= ' ' && c < 0x7f)
-          { 
+          {
             *p++ = c;
             *p = '\0';
-            printf ("%c", c); 
+            printf ("%c", c);
           }
           else
-            printf ("%c", c); 
+            printf ("%c", c);
 
           break;
       }
@@ -838,7 +831,7 @@ int argsParse (char *cmd, char **argv, int sizeofArgv, int *argc)
           if (isspace (*s)) {
             pstate = P_EATWHITESPACE;
             *s = '\0';
-          } 
+          }
           else if (*s == '"')
             pstate = P_QUOTEDGETCHAR;
 
@@ -907,7 +900,7 @@ void vCLITask( void *pvParameters )
 
    /* Just to prevent compiler warnings about the unused parameter. */
    ( void ) pvParameters;
-  
+
    printf("[*] Starting CLI task.\n");
 
 
@@ -924,13 +917,13 @@ void vCLITask( void *pvParameters )
       vTaskDelay( xDelay );
 
    }
-   
+
 
    for(;;) {
 
       vTaskDelay( xDelay );
-      
+
    }
-}  
+}
 
 

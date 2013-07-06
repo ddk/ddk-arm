@@ -41,47 +41,47 @@ DPUCHAR AES_mode_value; /* Holds the value of the AES mode for dual key devices 
 
 DPULONG device_ID;  /* Holds the device ID */
 DPUCHAR device_rev; /* Holds the device revision */
-/* Device exception is to test for 015 vs 030 devices. 
+/* Device exception is to test for 015 vs 030 devices.
 *  The value is read out from the data file
 */
-DPUCHAR device_exception; 
+DPUCHAR device_exception;
 DPUINT device_rows;        /* Device specific number of rows  */
 DPUCHAR device_SD;        /* Device specific number of SD tiles */
 DPUCHAR device_family = 0U;    /* Read from the data file AFS, or G3 */
 DPUINT device_bsr_bit_length; /* Holds the bit length of the BSR register */
 
-/* DataIndex variable is used to keep track of the position of the data 
-* loaded in the file 
+/* DataIndex variable is used to keep track of the position of the data
+* loaded in the file
 */
-DPULONG DataIndex;   
+DPULONG DataIndex;
 /* dat_support_status contains the support and encryption status of the
-* different features in the data file. 
+* different features in the data file.
 */
-DPUINT dat_support_status; 
-/* device_security_flags contains the security (pass key and encryption) 
-* bit status of the device 
+DPUINT dat_support_status;
+/* device_security_flags contains the security (pass key and encryption)
+* bit status of the device
 */
-DPULONG device_security_flags; 
-/* error_code holds the error code that could be set in the programming 
-* functions 
+DPULONG device_security_flags;
+/* error_code holds the error code that could be set in the programming
+* functions
 */
-DPUCHAR error_code; 
+DPUCHAR error_code;
 
 
 /****************************************************************************
-* Purpose: main entry function                                              
-*  This function needs to be called from the main application function with 
+* Purpose: main entry function
+*  This function needs to be called from the main application function with
 *  the approppriate action code set to intiate the desired action.
 ****************************************************************************/
 DPUCHAR dp_top (void)
 {
-    dp_init_vars();        
+    dp_init_vars();
     if ((hardware_interface != GPIO_SEL) && (hardware_interface != IAP_SEL))
     {
         #ifdef ENABLE_DEBUG
         dp_display_text("\r\nHardware interface is not selected.  Please assign hardware_interface to either IAP_SEL or GPIO_SEL prior to calling dp_top.");
         #endif
-        
+
         error_code = DPE_HARDWARE_NOT_SELECTED;
     }
     if (hardware_interface == GPIO_SEL)
@@ -90,7 +90,7 @@ DPUCHAR dp_top (void)
         #ifdef ENABLE_DEBUG
         dp_display_text("\r\nENABLE_GPIO_SUPPORT compile switch must be enabled to perform extrnal device programming.");
         #endif
-        error_code = DPE_HARDWARE_NOT_SELECTED;      
+        error_code = DPE_HARDWARE_NOT_SELECTED;
       #endif
     }
     if (hardware_interface == IAP_SEL)
@@ -99,16 +99,16 @@ DPUCHAR dp_top (void)
         #ifdef ENABLE_DEBUG
         dp_display_text("\r\nENABLE_IAP_SUPPORT compile switch must be enabled to perform IAP programming.");
         #endif
-        error_code = DPE_HARDWARE_NOT_SELECTED;      
+        error_code = DPE_HARDWARE_NOT_SELECTED;
       #endif
     }
-         
+
     if (error_code == DPE_SUCCESS)
     {
         if (!(
         (Action_code == DP_READ_USERCODE_ACTION_CODE) ||
         (Action_code == DP_IS_CORE_CONFIGURED_ACTION_CODE) ||
-        (Action_code == DP_READ_IDCODE_ACTION_CODE)  
+        (Action_code == DP_READ_IDCODE_ACTION_CODE)
         ))
         {
             dp_check_image_crc();
@@ -128,20 +128,20 @@ DPUCHAR dp_top (void)
 }
 
 /****************************************************************************
-* Purpose: Checks the requested action against the compile options of the  
-*  DirectC Code and the data file features.  If the data file has support 
+* Purpose: Checks the requested action against the compile options of the
+*  DirectC Code and the data file features.  If the data file has support
 *  for a feature that is not supported by the DirectC code because the
 *  corresponding compile option is disabled, this function will generate
-*  depending on the requested action.                  
+*  depending on the requested action.
 ****************************************************************************/
 #ifndef ENABLE_CODE_SPACE_OPTIMIZATION
 void dp_check_action(void)
 {
-    if ( (Action_code == DP_VERIFY_DEVICE_INFO_ACTION_CODE) || 
+    if ( (Action_code == DP_VERIFY_DEVICE_INFO_ACTION_CODE) ||
     (Action_code == DP_IS_CORE_CONFIGURED_ACTION_CODE) )
     {
     }
-    else if ((Action_code == DP_READ_IDCODE_ACTION_CODE) || 
+    else if ((Action_code == DP_READ_IDCODE_ACTION_CODE) ||
     (Action_code == DP_DEVICE_INFO_ACTION_CODE))
     {
         #ifndef ENABLE_DEBUG
@@ -150,16 +150,16 @@ void dp_check_action(void)
     }
     else if (Action_code == DP_ERASE_ACTION_CODE)
     {
-        if (((dat_support_status & CORE_DAT_SUPPORT_BIT) == 0U) && 
-        ((dat_support_status & FROM_DAT_SUPPORT_BIT) == 0U) && 
+        if (((dat_support_status & CORE_DAT_SUPPORT_BIT) == 0U) &&
+        ((dat_support_status & FROM_DAT_SUPPORT_BIT) == 0U) &&
         ((dat_support_status & SEC_DAT_SUPPORT_BIT) == 0U))
         {
             error_code = DPE_ACTION_NOT_SUPPORTED;
         }
-        #ifdef ENABLE_IAP_SUPPORT        
+        #ifdef ENABLE_IAP_SUPPORT
         if ( (hardware_interface == IAP_SEL) && (device_ID == A2F200_ID) )
         {
-            if (dat_support_status & FROM_DAT_SUPPORT_BIT) 
+            if (dat_support_status & FROM_DAT_SUPPORT_BIT)
             {
                 #ifdef ENABLE_DEBUG
                 dp_display_text("\r\nFROM  erase is not supported with IAP on A2F200 devices. Refer to user guide for more information.");
@@ -211,16 +211,16 @@ void dp_check_action(void)
                 error_code = DPE_CODE_NOT_ENABLED;
                 #endif
             }
-            else 
+            else
             {
                 #ifndef FROM_PLAIN
                 error_code = DPE_CODE_NOT_ENABLED;
                 #endif
             }
-            #ifdef ENABLE_IAP_SUPPORT            
+            #ifdef ENABLE_IAP_SUPPORT
             if ( (hardware_interface == IAP_SEL) && (device_ID == A2F200_ID) )
             {
-                #ifdef ENABLE_DEBUG     
+                #ifdef ENABLE_DEBUG
                 dp_display_text("\r\nFROM programming is not supported with IAP on A2F200 devices. Refer to user guide for more information.");
                 #endif
                 error_code = DPE_ACTION_NOT_SUPPORTED;
@@ -242,16 +242,16 @@ void dp_check_action(void)
             }
             #endif
         }
-        if ((dat_support_status & 
-        (NVM0_DAT_ENCRYPTION_BIT | NVM1_DAT_ENCRYPTION_BIT | 
+        if ((dat_support_status &
+        (NVM0_DAT_ENCRYPTION_BIT | NVM1_DAT_ENCRYPTION_BIT |
         NVM2_DAT_ENCRYPTION_BIT | NVM3_DAT_ENCRYPTION_BIT)))
         {
             #ifndef NVM_ENCRYPT
             error_code = DPE_CODE_NOT_ENABLED;
             #endif
-            if (((dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U) || 
-            ((dat_support_status & NVM1_DAT_ENCRYPTION_BIT) == 0U) || 
-            ((dat_support_status & NVM2_DAT_ENCRYPTION_BIT) == 0U) || 
+            if (((dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U) ||
+            ((dat_support_status & NVM1_DAT_ENCRYPTION_BIT) == 0U) ||
+            ((dat_support_status & NVM2_DAT_ENCRYPTION_BIT) == 0U) ||
             ((dat_support_status & NVM3_DAT_ENCRYPTION_BIT) == 0U))
             {
                 #ifndef NVM_PLAIN
@@ -269,9 +269,9 @@ void dp_check_action(void)
     }
     else if (Action_code == DP_VERIFY_ACTION_CODE)
     {
-        if (((dat_support_status & CORE_DAT_SUPPORT_BIT) == 0U) && 
-        (((dat_support_status & FROM_DAT_SUPPORT_BIT) == 0U) || 
-        (dat_support_status & FROM_DAT_ENCRYPTION_BIT)) && 
+        if (((dat_support_status & CORE_DAT_SUPPORT_BIT) == 0U) &&
+        (((dat_support_status & FROM_DAT_SUPPORT_BIT) == 0U) ||
+        (dat_support_status & FROM_DAT_ENCRYPTION_BIT)) &&
         ((dat_support_status & NVM_DAT_VERIFY_SUPPORT_BIT) == 0U))
         {
             error_code = DPE_ACTION_NOT_SUPPORTED;
@@ -318,8 +318,8 @@ void dp_check_action(void)
         }
     }
     /* Core Code and Data support check */
-    else if ((Action_code == DP_ERASE_ARRAY_ACTION_CODE) || 
-    (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) || 
+    else if ((Action_code == DP_ERASE_ARRAY_ACTION_CODE) ||
+    (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) ||
     (Action_code == DP_VERIFY_ARRAY_ACTION_CODE))
     {
         if ((dat_support_status & CORE_DAT_SUPPORT_BIT) == 0U)
@@ -358,8 +358,8 @@ void dp_check_action(void)
         #endif
     }
     /* FROM Code and Data support check */
-    else if ( (Action_code == DP_ERASE_FROM_ACTION_CODE) || 
-    (Action_code == DP_PROGRAM_FROM_ACTION_CODE) || 
+    else if ( (Action_code == DP_ERASE_FROM_ACTION_CODE) ||
+    (Action_code == DP_PROGRAM_FROM_ACTION_CODE) ||
     (Action_code == DP_VERIFY_FROM_ACTION_CODE) )
     {
         if ((dat_support_status & FROM_DAT_SUPPORT_BIT) == 0U)
@@ -389,7 +389,7 @@ void dp_check_action(void)
         #ifdef ENABLE_IAP_SUPPORT
         if ( (hardware_interface == IAP_SEL) && (device_ID == A2F200_ID) )
         {
-            if ( ( Action_code == DP_ERASE_FROM_ACTION_CODE) || 
+            if ( ( Action_code == DP_ERASE_FROM_ACTION_CODE) ||
             ( Action_code == DP_PROGRAM_FROM_ACTION_CODE) )
             {
                 #ifdef ENABLE_DEBUG
@@ -400,12 +400,12 @@ void dp_check_action(void)
         }
         #endif
     }
-    else if ( (Action_code == DP_PROGRAM_NVM_ACTION_CODE) || (Action_code == DP_VERIFY_NVM_ACTION_CODE) || 
+    else if ( (Action_code == DP_PROGRAM_NVM_ACTION_CODE) || (Action_code == DP_VERIFY_NVM_ACTION_CODE) ||
         (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTION_CODE) || (Action_code == DP_VERIFY_PRIVATE_CLIENTS_ACTION_CODE))
     {
-        if ( (dat_support_status & (NVM0_DAT_SUPPORT_BIT | 
-        NVM1_DAT_SUPPORT_BIT | 
-        NVM2_DAT_SUPPORT_BIT | 
+        if ( (dat_support_status & (NVM0_DAT_SUPPORT_BIT |
+        NVM1_DAT_SUPPORT_BIT |
+        NVM2_DAT_SUPPORT_BIT |
         NVM3_DAT_SUPPORT_BIT)) == 0U)
         {
             error_code = DPE_ACTION_NOT_SUPPORTED;
@@ -413,17 +413,17 @@ void dp_check_action(void)
         #ifndef NVM_SUPPORT
         error_code = DPE_CODE_NOT_ENABLED;
         #endif
-        if ((dat_support_status & 
-        (NVM0_DAT_ENCRYPTION_BIT | NVM1_DAT_ENCRYPTION_BIT | 
+        if ((dat_support_status &
+        (NVM0_DAT_ENCRYPTION_BIT | NVM1_DAT_ENCRYPTION_BIT |
         NVM2_DAT_ENCRYPTION_BIT | NVM3_DAT_ENCRYPTION_BIT)))
         {
             #ifndef NVM_ENCRYPT
             error_code = DPE_CODE_NOT_ENABLED;
             #endif
         }
-        else if ( ( (dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U ) || 
-        ( (dat_support_status & NVM1_DAT_ENCRYPTION_BIT) == 0U ) || 
-        ( (dat_support_status & NVM2_DAT_ENCRYPTION_BIT) == 0U ) || 
+        else if ( ( (dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U ) ||
+        ( (dat_support_status & NVM1_DAT_ENCRYPTION_BIT) == 0U ) ||
+        ( (dat_support_status & NVM2_DAT_ENCRYPTION_BIT) == 0U ) ||
         ( (dat_support_status & NVM3_DAT_ENCRYPTION_BIT) == 0U ) )
         {
             #ifndef NVM_PLAIN
@@ -438,7 +438,7 @@ void dp_check_action(void)
         {
         }
     }
-    else if ( (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTION_CODE) || 
+    else if ( (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTION_CODE) ||
     (Action_code == DP_VERIFY_PRIVATE_CLIENTS_ACTION_CODE) )
     {
         if ( (dat_support_status & NVM0_DAT_SUPPORT_BIT ) == 0U)
@@ -454,7 +454,7 @@ void dp_check_action(void)
             error_code = DPE_CODE_NOT_ENABLED;
             #endif
         }
-        else if ((dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U )      
+        else if ((dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U )
         {
             #ifndef NVM_PLAIN
             error_code = DPE_CODE_NOT_ENABLED;
@@ -468,7 +468,7 @@ void dp_check_action(void)
         {
         }
     }
-    else if ( (Action_code == DP_ERASE_SECURITY_ACTION_CODE) || 
+    else if ( (Action_code == DP_ERASE_SECURITY_ACTION_CODE) ||
     (Action_code == DP_PROGRAM_SECURITY_ACTION_CODE) )
     {
         if ((dat_support_status & SEC_DAT_SUPPORT_BIT) == 0U)
@@ -488,12 +488,12 @@ void dp_check_action(void)
         }
         #endif
     }
-    else 
+    else
     {
         error_code = DPE_ACTION_NOT_FOUND;
     }
-    
-    
+
+
     #ifdef ENABLE_DEBUG
     if (error_code == DPE_ACTION_NOT_FOUND)
     {
@@ -511,38 +511,38 @@ void dp_check_action(void)
     {
     }
     #endif
-    
+
     return;
-    
+
 }
 #else
 void dp_check_action(void)
 {
     DPUINT dat_status=0u;
     /* Construct code support */
-    #ifdef ENABLE_GPIO_SUPPORT            
-    const DPUINT code_status = CORE_CODE_PLAIN_SUPPORT_BIT | 
-    CORE_CODE_ENCRYPTION_BIT | 
-    FROM_CODE_PLAIN_SUPPORT_BIT | 
+    #ifdef ENABLE_GPIO_SUPPORT
+    const DPUINT code_status = CORE_CODE_PLAIN_SUPPORT_BIT |
+    CORE_CODE_ENCRYPTION_BIT |
+    FROM_CODE_PLAIN_SUPPORT_BIT |
     FROM_CODE_ENCRYPTION_BIT |
-    NVM_CODE_PLAIN_SUPPORT_BITS  | 
+    NVM_CODE_PLAIN_SUPPORT_BITS  |
     NVM_CODE_ENCRYPTION_BITS |
     SEC_CODE_SUPPORT_BIT;
     #endif
-    #ifdef ENABLE_IAP_SUPPORT            
-    const DPUINT a2f200_iap_code_status = CORE_CODE_PLAIN_SUPPORT_BIT | 
-    CORE_CODE_ENCRYPTION_BIT | 
-    NVM_CODE_PLAIN_SUPPORT_BITS  | 
-    NVM_CODE_ENCRYPTION_BITS;
-    const DPUINT a2f500_iap_code_status = CORE_CODE_PLAIN_SUPPORT_BIT | 
+    #ifdef ENABLE_IAP_SUPPORT
+    const DPUINT a2f200_iap_code_status = CORE_CODE_PLAIN_SUPPORT_BIT |
     CORE_CODE_ENCRYPTION_BIT |
-    FROM_CODE_PLAIN_SUPPORT_BIT | 
+    NVM_CODE_PLAIN_SUPPORT_BITS  |
+    NVM_CODE_ENCRYPTION_BITS;
+    const DPUINT a2f500_iap_code_status = CORE_CODE_PLAIN_SUPPORT_BIT |
+    CORE_CODE_ENCRYPTION_BIT |
+    FROM_CODE_PLAIN_SUPPORT_BIT |
     FROM_CODE_ENCRYPTION_BIT |
-    NVM_CODE_PLAIN_SUPPORT_BITS  | 
+    NVM_CODE_PLAIN_SUPPORT_BITS  |
     NVM_CODE_ENCRYPTION_BITS;
     #endif
-    
-    
+
+
     /* The data file bit mapping is as follows.
     bit 0: CORE support,
     bit 1: FROM support,
@@ -560,7 +560,7 @@ void dp_check_action(void)
     bit 13: NVM1 Encryption status
     bit 14: NVM2 Encryption status
     bit 15: NVM3 Encryption status
-    
+
     These bits need to be mapped as follows:
     bit 0: CORE plain status,
     bit 1: FROM plain status,
@@ -578,22 +578,22 @@ void dp_check_action(void)
     bit 13: NVM1 Encryption status
     bit 14: NVM2 Encryption status
     bit 15: NVM3 Encryption status
-    
+
     */
-    /* Need to line up the support bits to line up with encrypt status bits so 
+    /* Need to line up the support bits to line up with encrypt status bits so
     that support bits can be switched to plain support bits instead */
-    
+
     if(hardware_interface == GPIO_SEL)
     {
-        dat_status = (dat_support_status & 0x0003u) | 
+        dat_status = (dat_support_status & 0x0003u) |
         ((dat_support_status & 0x0078u) >> 1u);
         /* This statments flips the support bits to plain support bits */
         dat_status = dat_status ^ (dat_support_status >> 10);
-        
-        /* This statment add the encypt bits for comparisson.  The mask value lines 
+
+        /* This statment add the encypt bits for comparisson.  The mask value lines
         * up with the definitions above*/
         dat_status |= (dat_support_status & 0xFD00u);
-        
+
         /* test for compatiblity */
         #ifdef ENABLE_GPIO_SUPPORT
         if (hardware_interface == GPIO_SEL)
@@ -602,7 +602,7 @@ void dp_check_action(void)
         }
         #endif
         #ifdef ENABLE_IAP_SUPPORT
-        if (hardware_interface == IAP_SEL) 
+        if (hardware_interface == IAP_SEL)
         {
             if (device_ID == A2F200_ID)
             {
@@ -614,12 +614,12 @@ void dp_check_action(void)
             }
         }
         #endif
-        
+
         if (dat_status)
         {
             #ifdef ENABLE_DEBUG
             #ifdef ENABLE_IAP_SUPPORT
-            if (hardware_interface == IAP_SEL) 
+            if (hardware_interface == IAP_SEL)
             {
                 if (device_ID == A2F200_ID)
                 {
@@ -636,7 +636,7 @@ void dp_check_action(void)
             error_code = DPE_CODE_NOT_ENABLED;
         }
     }
-    
+
     return;
 }
 #endif
@@ -648,7 +648,7 @@ void dp_perform_action (void)
     if (!(
     (Action_code == DP_READ_USERCODE_ACTION_CODE) ||
     (Action_code == DP_IS_CORE_CONFIGURED_ACTION_CODE) ||
-    (Action_code == DP_READ_IDCODE_ACTION_CODE)  
+    (Action_code == DP_READ_IDCODE_ACTION_CODE)
     ))
     {
         #ifdef ENABLE_CODE_SPACE_OPTIMIZATION
@@ -689,9 +689,9 @@ void dp_perform_action (void)
         if (Action_done == FALSE)
         {
             if (
-                (Action_code == DP_PROGRAM_NVM_ACTIVE_ARRAY_ACTION_CODE) || 
+                (Action_code == DP_PROGRAM_NVM_ACTIVE_ARRAY_ACTION_CODE) ||
                 (Action_code == DP_VERIFY_NVM_ACTIVE_ARRAY_ACTION_CODE) ||
-                (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTIVE_ARRAY_ACTION_CODE) || 
+                (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTIVE_ARRAY_ACTION_CODE) ||
                 (Action_code == DP_VERIFY_PRIVATE_CLIENTS_ACTIVE_ARRAY_ACTION_CODE)
                 )
             {
@@ -703,8 +703,8 @@ void dp_perform_action (void)
                     {
                         if (Action_code == DP_PROGRAM_NVM_ACTIVE_ARRAY_ACTION_CODE)
                         {
-                            if (dat_support_status & 
-                            (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | 
+                            if (dat_support_status &
+                            (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT |
                             NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT))
                             {
                                 dp_program_nvm_action();
@@ -724,7 +724,7 @@ void dp_perform_action (void)
                             {
                                 dp_verify_nvm_action();
                             }
-                            else 
+                            else
                             {
                                 #ifdef ENABLE_DEBUG
                                 dp_display_text("\r\nAction not found...");
@@ -735,8 +735,8 @@ void dp_perform_action (void)
                         }
                         else if (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTIVE_ARRAY_ACTION_CODE)
                         {
-                            if (dat_support_status & 
-                            (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | 
+                            if (dat_support_status &
+                            (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT |
                             NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT))
                             {
                                 dp_program_nvm_private_clients_action();
@@ -749,14 +749,14 @@ void dp_perform_action (void)
                                 error_code = DPE_ACTION_NOT_FOUND;
                             }
                         }
-                        else 
+                        else
                         {
                             #ifdef NVM_PLAIN
                             if (dat_support_status & NVM_DAT_VERIFY_SUPPORT_BIT)
                             {
                                 dp_verify_nvm_private_clients_action();
                             }
-                            else 
+                            else
                             {
                                 #ifdef ENABLE_DEBUG
                                 dp_display_text("\r\nAction not found...");
@@ -779,7 +779,7 @@ void dp_perform_action (void)
         {
             #ifdef NVM_SUPPORT
             if (
-            ((device_family & SFS_BIT) == SFS_BIT) &&  
+            ((device_family & SFS_BIT) == SFS_BIT) &&
             (dat_support_status | (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT)) &&
             (
             (Action_code == DP_PROGRAM_ACTION_CODE) ||
@@ -801,15 +801,15 @@ void dp_perform_action (void)
                 }
             }
             #endif
-            
+
             dp_initialize();
             if (error_code == DPE_SUCCESS)
             {
                 /* Read the security bit settings of the target device */
                 dp_read_device_security();
-                
-                if ((Action_code != DP_READ_IDCODE_ACTION_CODE) && 
-                (Action_code != DP_DEVICE_INFO_ACTION_CODE) && 
+
+                if ((Action_code != DP_READ_IDCODE_ACTION_CODE) &&
+                (Action_code != DP_DEVICE_INFO_ACTION_CODE) &&
                 (Action_code != DP_VERIFY_DEVICE_INFO_ACTION_CODE))
                 {
                     /* Match security bit settings against the data file */
@@ -871,7 +871,7 @@ void dp_perform_action (void)
                 /* Perform the action */
                 if (error_code == DPE_SUCCESS)
                 {
-                    switch (Action_code) 
+                    switch (Action_code)
                     {
                         #ifdef ENABLE_DEBUG
                         case DP_DEVICE_INFO_ACTION_CODE:
@@ -881,21 +881,21 @@ void dp_perform_action (void)
                         dp_verify_device_info_action();
                         break;
                         #endif
-                        case DP_ERASE_ACTION_CODE: 
+                        case DP_ERASE_ACTION_CODE:
                         dp_erase_action();
-                        break;         
-                        case DP_PROGRAM_ACTION_CODE: 
+                        break;
+                        case DP_PROGRAM_ACTION_CODE:
                         dp_program_action();
                         break;
-                        case DP_VERIFY_ACTION_CODE: 
-                        if ( (dat_support_status & CORE_DAT_SUPPORT_BIT) || 
-                        ( (dat_support_status & FROM_DAT_SUPPORT_BIT) && 
-                        ( (dat_support_status & FROM_DAT_ENCRYPTION_BIT) == 0U)) || 
+                        case DP_VERIFY_ACTION_CODE:
+                        if ( (dat_support_status & CORE_DAT_SUPPORT_BIT) ||
+                        ( (dat_support_status & FROM_DAT_SUPPORT_BIT) &&
+                        ( (dat_support_status & FROM_DAT_ENCRYPTION_BIT) == 0U)) ||
                         (dat_support_status & NVM_DAT_VERIFY_SUPPORT_BIT))
                         {
                             dp_verify_action();
                         }
-                        else 
+                        else
                         {
                             #ifdef ENABLE_DEBUG
                             dp_display_text("\r\nAction not found...");
@@ -905,7 +905,7 @@ void dp_perform_action (void)
                         break;
                         #ifndef DISABLE_CORE_SPECIFIC_ACTIONS
                         #ifdef CORE_SUPPORT
-                        case DP_ERASE_ARRAY_ACTION_CODE: 
+                        case DP_ERASE_ARRAY_ACTION_CODE:
                         if (dat_support_status & CORE_DAT_SUPPORT_BIT)
                         {
                             dp_erase_array_action();
@@ -917,8 +917,8 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
-                        case DP_PROGRAM_ARRAY_ACTION_CODE: 
+                        break;
+                        case DP_PROGRAM_ARRAY_ACTION_CODE:
                         if (dat_support_status & CORE_DAT_SUPPORT_BIT)
                         {
                             dp_program_array_action();
@@ -930,8 +930,8 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
-                        case DP_VERIFY_ARRAY_ACTION_CODE: 
+                        break;
+                        case DP_VERIFY_ARRAY_ACTION_CODE:
                         if (dat_support_status & CORE_DAT_SUPPORT_BIT)
                         {
                             dp_verify_array_action();
@@ -943,9 +943,9 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
+                        break;
                         #ifdef CORE_ENCRYPT
-                        case DP_ENC_DATA_AUTHENTICATION_ACTION_CODE: 
+                        case DP_ENC_DATA_AUTHENTICATION_ACTION_CODE:
                         if (dat_support_status & CORE_DAT_ENCRYPTION_BIT)
                         {
                             dp_enc_data_authentication_action();
@@ -957,13 +957,13 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
+                        break;
                         #endif
                         #endif
                         #endif
                         #ifndef DISABLE_FROM_SPECIFIC_ACTIONS
                         #ifdef FROM_SUPPORT
-                        case DP_ERASE_FROM_ACTION_CODE: 
+                        case DP_ERASE_FROM_ACTION_CODE:
                         if (dat_support_status & FROM_DAT_SUPPORT_BIT)
                         {
                             dp_erase_from_action();
@@ -975,8 +975,8 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
-                        case DP_PROGRAM_FROM_ACTION_CODE: 
+                        break;
+                        case DP_PROGRAM_FROM_ACTION_CODE:
                         if (dat_support_status & FROM_DAT_SUPPORT_BIT)
                         {
                             dp_program_from_action();
@@ -988,9 +988,9 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
-                        case DP_VERIFY_FROM_ACTION_CODE: 
-                        if ((dat_support_status & FROM_DAT_SUPPORT_BIT) && 
+                        break;
+                        case DP_VERIFY_FROM_ACTION_CODE:
+                        if ((dat_support_status & FROM_DAT_SUPPORT_BIT) &&
                         ((dat_support_status & FROM_DAT_ENCRYPTION_BIT) == 0U))
                         {
                             dp_verify_from_action();
@@ -1002,12 +1002,12 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
+                        break;
                         #endif
                         #endif
                         #ifndef DISABLE_NVM_SPECIFIC_ACTIONS
                         #ifdef NVM_SUPPORT
-                        case DP_PROGRAM_NVM_ACTION_CODE: 
+                        case DP_PROGRAM_NVM_ACTION_CODE:
                         if (dat_support_status & (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT))
                         {
                             dp_program_nvm_action();
@@ -1019,8 +1019,8 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
-                        case DP_PROGRAM_PRIVATE_CLIENTS_ACTION_CODE: 
+                        break;
+                        case DP_PROGRAM_PRIVATE_CLIENTS_ACTION_CODE:
                         if (dat_support_status & NVM0_DAT_SUPPORT_BIT )
                         {
                             dp_program_nvm_private_clients_action();
@@ -1032,14 +1032,14 @@ void dp_perform_action (void)
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
+                        break;
                         #ifdef NVM_PLAIN
-                        case DP_VERIFY_NVM_ACTION_CODE: 
+                        case DP_VERIFY_NVM_ACTION_CODE:
                         if (dat_support_status & NVM_DAT_VERIFY_SUPPORT_BIT)
                         {
                             dp_verify_nvm_action();
                         }
-                        else 
+                        else
                         {
                             #ifdef ENABLE_DEBUG
                             dp_display_text("\r\nAction not found...");
@@ -1047,12 +1047,12 @@ void dp_perform_action (void)
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
                         break;
-                        case DP_VERIFY_PRIVATE_CLIENTS_ACTION_CODE: 
+                        case DP_VERIFY_PRIVATE_CLIENTS_ACTION_CODE:
                         if (dat_support_status & NVM_DAT_VERIFY_SUPPORT_BIT)
                         {
                             dp_verify_nvm_private_clients_action();
                         }
-                        else 
+                        else
                         {
                             #ifdef ENABLE_DEBUG
                             dp_display_text("\r\nAction not found...");
@@ -1065,32 +1065,32 @@ void dp_perform_action (void)
                         #endif
                         #ifndef DISABLE_SEC_SPECIFIC_ACTIONS
                         #ifdef SECURITY_SUPPORT
-                        case DP_ERASE_SECURITY_ACTION_CODE: 
+                        case DP_ERASE_SECURITY_ACTION_CODE:
                         if (dat_support_status & SEC_DAT_SUPPORT_BIT)
                         {
                             dp_erase_security_action();
                         }
-                        else 
+                        else
                         {
                             #ifdef ENABLE_DEBUG
                             dp_display_text("\r\nAction not found...");
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
-                        case DP_PROGRAM_SECURITY_ACTION_CODE: 
+                        break;
+                        case DP_PROGRAM_SECURITY_ACTION_CODE:
                         if (dat_support_status & SEC_DAT_SUPPORT_BIT)
                         {
                             dp_program_security_action();
                         }
-                        else 
+                        else
                         {
                             #ifdef ENABLE_DEBUG
                             dp_display_text("\r\nAction not found...");
                             #endif
                             error_code = DPE_ACTION_NOT_FOUND;
                         }
-                        break;         
+                        break;
                         #endif
                         #endif
                         default:
@@ -1105,7 +1105,7 @@ void dp_perform_action (void)
             }
         }
     }
-    return;    
+    return;
 }
 /****************************************************************************
 * Purpose: Reads the target device ID and checks it against the data file.
@@ -1119,14 +1119,14 @@ void dp_check_device_ID_V85_DAT(void)
     goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
     DRSCAN_out(IDCODE_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
-    
-    device_ID = ((DPULONG) global_buf1 [0]) | (((DPULONG) global_buf1 [1]) <<8) | (((DPULONG) global_buf1 [2]) <<16) | (((DPULONG) global_buf1 [3]) <<24); 
+
+    device_ID = ((DPULONG) global_buf1 [0]) | (((DPULONG) global_buf1 [1]) <<8) | (((DPULONG) global_buf1 [2]) <<16) | (((DPULONG) global_buf1 [3]) <<24);
     device_rev = (DPUCHAR) (device_ID >> 28);
-    
-    /* DataIndex is a variable used for loading the array data but not used now.  
+
+    /* DataIndex is a variable used for loading the array data but not used now.
     * Therefore, it can be used to store the Data file ID for */
     DataIndex = dp_get_bytes(Header_ID,ID_OFFSET,4u);
-    
+
     /* Identifying target device and setting its parms */
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nActID = ");
@@ -1136,7 +1136,7 @@ void dp_check_device_ID_V85_DAT(void)
     dp_display_text("\r\nDevice Rev = ");
     dp_display_value(device_rev,HEX);
     #endif
-    
+
     if ( ((device_ID & AXXE600X_ID_MASK) == (AXXE600X_ID & AXXE600X_ID_MASK)) && ((device_ID & AXXE600X_ID_MASK) == (DataIndex & AXXE600X_ID_MASK)) )
     {
         device_ID &= AXXE600X_ID_MASK;
@@ -1287,21 +1287,21 @@ void dp_check_device_ID(void)
     goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
     DRSCAN_out(IDCODE_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
-    
-    device_ID = ((DPULONG) global_buf1 [0]) | (((DPULONG) global_buf1 [1]) <<8) | (((DPULONG) global_buf1 [2]) <<16) | (((DPULONG) global_buf1 [3]) <<24); 
+
+    device_ID = ((DPULONG) global_buf1 [0]) | (((DPULONG) global_buf1 [1]) <<8) | (((DPULONG) global_buf1 [2]) <<16) | (((DPULONG) global_buf1 [3]) <<24);
     device_rev = (DPUCHAR) (device_ID >> 28);
-    
-    
-    /* DataIndex is a variable used for loading the array data but not used now.  
+
+
+    /* DataIndex is a variable used for loading the array data but not used now.
     * Therefore, it can be used to store the Data file ID for */
     DataIndex = dp_get_bytes(Header_ID,ID_OFFSET,4U);
-    
+
     global_ulong = dp_get_bytes(Header_ID,ID_MASK_OFFSET,4U);
-    
+
     device_ID &= global_ulong;
     DataIndex &= global_ulong;
     /* Identifying target device and setting its parms */
-    
+
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nActID = ");
     dp_display_value(device_ID,HEX);
@@ -1310,7 +1310,7 @@ void dp_check_device_ID(void)
     dp_display_text("\r\nDevice Rev = ");
     dp_display_value(device_rev,HEX);
     #endif
-    
+
     if ( device_ID == DataIndex )
     {
         device_SD = (DPUCHAR) dp_get_bytes(Header_ID,SD_TILES_OFFSET,1U);
@@ -1323,7 +1323,7 @@ void dp_check_device_ID(void)
     {
         error_code = DPE_IDCODE_ERROR;
     }
-    
+
 }
 /****************************************************************************
 * Purpose: Perform the test register test to identify if the target device
@@ -1332,13 +1332,13 @@ void dp_check_device_ID(void)
 #if (!defined ENABLE_CODE_SPACE_OPTIMIZATION)
 void dp_test_reg_015_030_check(void)
 {
-    
+
     opcode = LDVPROP;
     IRSCAN_in();
-    
+
     DRSCAN_out(LDVPROP_LENGTH, (DPUCHAR*)DPNULL, &global_uchar);
-    
-    
+
+
     /* Check for 030 mistmacth */
     if (global_uchar == 0x20U)
     {
@@ -1361,7 +1361,7 @@ void dp_test_reg_015_030_check(void)
     else
     {
     }
-    
+
 }
 /****************************************************************************
 * Purpose: Perform the forw bit test to identify if the target device
@@ -1369,10 +1369,10 @@ void dp_test_reg_015_030_check(void)
 ****************************************************************************/
 void dp_frow_015_030_check(void)
 {
-    
+
     global_uchar = 0x4U;
     dp_read_factory_row();
-    
+
     if ( (global_buf1[6] & 0x80U) == 0x80U )
     {
         if (device_exception == AXX030_DEVICE)
@@ -1380,7 +1380,7 @@ void dp_frow_015_030_check(void)
             error_code = DPE_IDCODE_ERROR;
         }
     }
-    else 
+    else
     {
         if (device_exception == AXX015_DEVICE)
         {
@@ -1398,7 +1398,7 @@ void dp_vnr(void)
     return;
 }
 /****************************************************************************
-* Purpose: Loads the BSR regsiter with data specified in the data file.  
+* Purpose: Loads the BSR regsiter with data specified in the data file.
 *   If BSR_SAMPLE is enabled, the data is not loaded.  Instead, the last known
 *   State of the IOs is maintained by stepping through DRCapture JTAG state.
 ****************************************************************************/
@@ -1409,7 +1409,7 @@ void dp_load_bsr(void)
     #endif
     opcode = ISC_SAMPLE;
     IRSCAN_out(&global_uchar);
-    
+
     #ifdef BSR_SAMPLE
     /* Capturing the last known state of the IOs is only valid if the core
     was programmed.  Otherwise, load the BSR with what is in the data file. */
@@ -1422,7 +1422,7 @@ void dp_load_bsr(void)
             goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
         }
     }
-    else 
+    else
     {
         goto_jtag_state(JTAG_CAPTURE_DR,0u);
         goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
@@ -1438,11 +1438,11 @@ void dp_load_bsr(void)
         goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
     }
     #endif
-    
+
     return;
 }
 /****************************************************************************
-* Purpose: Enter programming mode, load BSR and perform DMK verification 
+* Purpose: Enter programming mode, load BSR and perform DMK verification
 *  and key match to unlock the device if applicable.
 ****************************************************************************/
 void dp_initialize(void)
@@ -1458,16 +1458,16 @@ void dp_initialize(void)
     IRSCAN_in();
     DRSCAN_in(0u, 18u, (DPUCHAR*)(DPUCHAR*)DPNULL);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_ENABLE_CYCLES);
-    
+
     dp_delay(ISC_ENABLE_DELAY);
-    
+
     DRSCAN_out(18u, (DPUCHAR*)DPNULL, global_buf1);
-    
+
     if ((global_buf1[2] & 0x3U) != 0x3U)
     {
         error_code = DPE_INIT_FAILURE;
     }
-    
+
     /* Display factory information */
     global_uchar = 0u;
     dp_read_factory_row();
@@ -1480,9 +1480,9 @@ void dp_initialize(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nFSN: ");
     dp_display_array(global_buf1, 6u ,HEX);
-    #endif    
-    
-    
+    #endif
+
+
     /* Check for 015 vs 030 devices if applicable */
     #if ((!defined ENABLE_CODE_SPACE_OPTIMIZATION))
     if (dat_version != V85_DAT)
@@ -1503,8 +1503,8 @@ void dp_initialize(void)
             {
                 global_uchar = 0U;
                 /* This is to determine if there is a valid kdata in the data file.
-                In the case of Dual key plain programming, the encryption status bits are set 
-                in the DirectC code to use the encryption functions.  In this case, kdata 
+                In the case of Dual key plain programming, the encryption status bits are set
+                in the DirectC code to use the encryption functions.  In this case, kdata
                 verification is called although it does not exit. */
                 for (global_uint = 0U;global_uint < 16U; global_uint++)
                 {
@@ -1519,7 +1519,7 @@ void dp_initialize(void)
         #endif
         /* Perform key matching if applicable */
         if (error_code == DPE_SUCCESS)
-        {                 
+        {
             dp_get_bytes(UKEY_ID,0U,1U);
             if (return_bytes)
             {
@@ -1528,12 +1528,12 @@ void dp_initialize(void)
             /* Perform discrete address shifting check if applicable. */
             #if ( (!defined ENABLE_CODE_SPACE_OPTIMIZATION) || (defined ENABLE_DAS_SUPPORT) )
                 #ifdef CORE_SUPPORT
-            if ( ((device_ID & AXXE600X_ID_MASK) == (AXXE600X_ID & AXXE600X_ID_MASK)) || 
-            ((device_ID & AXXE1500X_ID_MASK) == (AXXE1500X_ID & AXXE1500X_ID_MASK)) || 
-            ((device_ID & AXXE3000X_ID_MASK) == (AXXE3000X_ID & AXXE3000X_ID_MASK)) || 
+            if ( ((device_ID & AXXE600X_ID_MASK) == (AXXE600X_ID & AXXE600X_ID_MASK)) ||
+            ((device_ID & AXXE1500X_ID_MASK) == (AXXE1500X_ID & AXXE1500X_ID_MASK)) ||
+            ((device_ID & AXXE3000X_ID_MASK) == (AXXE3000X_ID & AXXE3000X_ID_MASK)) ||
             ((((device_ID & AFS600_ID_MASK) == (AFS600_ID & AFS600_ID_MASK) ) && (device_rev > 1U) )) ||
             ((device_ID & AFS1500_ID_MASK) == (AFS1500_ID & AFS1500_ID_MASK)))
-            {                    
+            {
                 dp_das_check();
             }
             #endif
@@ -1553,7 +1553,7 @@ void dp_exit(void)
     dp_delay(ISC_DISABLE_DELAY);
     #ifdef NVM_SUPPORT
     if (
-    ((device_family & SFS_BIT) == SFS_BIT) &&  
+    ((device_family & SFS_BIT) == SFS_BIT) &&
     (dat_support_status | (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT)) &&
     (
     (Action_code == DP_PROGRAM_ACTION_CODE) ||
@@ -1704,12 +1704,12 @@ void dp_program_action(void)
         }
     }
     #endif
-    
+
     #ifdef NVM_SUPPORT
     if (error_code == DPE_SUCCESS)
     {
         if (
-        ((device_family & SFS_BIT) == SFS_BIT) &&  
+        ((device_family & SFS_BIT) == SFS_BIT) &&
         (dat_support_status | (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT))
         )
         {
@@ -1718,7 +1718,7 @@ void dp_program_action(void)
                 dp_initialize_access_nvm();
             }
         }
-        
+
         if (dat_support_status & NVM0_DAT_SUPPORT_BIT)
         {
             #ifdef NVM_ENCRYPT
@@ -1726,7 +1726,7 @@ void dp_program_action(void)
             if (dat_support_status & NVM0_DAT_ENCRYPTION_BIT)
             {
                 if (
-                    ((device_family & SFS_BIT) == SFS_BIT) && 
+                    ((device_family & SFS_BIT) == SFS_BIT) &&
                     ( (hardware_interface == GPIO_SEL) || (enable_mss_support) )
                     )
                 {
@@ -1743,7 +1743,7 @@ void dp_program_action(void)
             if ((dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U)
             {
                 if (
-                    ((device_family & SFS_BIT) == SFS_BIT) && 
+                    ((device_family & SFS_BIT) == SFS_BIT) &&
                     ( (hardware_interface == GPIO_SEL) || (enable_mss_support) )
                     )
                 {
@@ -1862,7 +1862,7 @@ void dp_program_action(void)
 
 void dp_verify_action(void)
 {
-    #ifdef CORE_SUPPORT    
+    #ifdef CORE_SUPPORT
     /* Array verification */
     if (dat_support_status & CORE_DAT_SUPPORT_BIT)
     {
@@ -1913,7 +1913,7 @@ void dp_verify_action(void)
             dp_initialize_access_nvm();
         }
     }
-    
+
     if (error_code == DPE_SUCCESS)
     {
         if (dat_support_status & NVM0_DAT_SUPPORT_BIT)
@@ -1922,7 +1922,7 @@ void dp_verify_action(void)
             if ((dat_support_status & NVM0_DAT_ENCRYPTION_BIT)  == 0U)
             {
                 if (
-                    ((device_family & SFS_BIT) == SFS_BIT) && 
+                    ((device_family & SFS_BIT) == SFS_BIT) &&
                     ( (hardware_interface == GPIO_SEL) )
                     )
                 {
@@ -1982,11 +1982,11 @@ void dp_verify_device_info_action(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nVerifying device info...");
     #endif
-    
+
     global_uchar = 0U;
     /* This is to determine if there is a valid kdata in the data file.
-    In the case of Dual key plain programming, the encryption status bits are set 
-    in the DirectC code to use the encryption functions.  In this case, kdata 
+    In the case of Dual key plain programming, the encryption status bits are set
+    in the DirectC code to use the encryption functions.  In this case, kdata
     verification is called although it does not exit. */
     for (global_uint = 0U;global_uint < 16U; global_uint++)
     {
@@ -2008,13 +2008,13 @@ void dp_verify_device_info_action(void)
         {
             global_ulong = dp_get_bytes(ULOCK_ID,0u,3u);
         }
-        else 
+        else
         {
             global_ulong = dp_get_bytes(ULOCK_ID,0u,2u);
             global_ulong <<= 12u;
         }
         if (global_ulong)
-        {   
+        {
             global_ulong |= ULFLR;
         }
         if ((device_security_flags & 0x003FFFFFu) != (global_ulong & 0x003FFFFFu))
@@ -2024,7 +2024,7 @@ void dp_verify_device_info_action(void)
             #endif
             error_code = DPE_USER_LOCK_SETTING_ERROR;
         }
-        
+
         if (error_code == DPE_SUCCESS)
         {
             dp_read_urow();
@@ -2033,23 +2033,23 @@ void dp_verify_device_info_action(void)
             {
                 read_urow_nvm();
             }
-            #endif        
+            #endif
             /* Checksum verification -- Bit 112 - 127 */
-            #ifdef ENABLE_GPIO_SUPPORT                                
+            #ifdef ENABLE_GPIO_SUPPORT
             if (hardware_interface == GPIO_SEL)
             {
                 global_uint =  (DPUINT)global_buf2[14] | ((DPUINT)global_buf2[15] << 8u);
             }
             #endif
-            #ifdef ENABLE_IAP_SUPPORT                                
+            #ifdef ENABLE_IAP_SUPPORT
             if (hardware_interface == IAP_SEL)
             {
                 global_uint =  (DPUINT)actual_iap_urow[14] | ((DPUINT)actual_iap_urow[15] << 8u);
             }
             #endif
-            
+
             global_ulong = (DPULONG) dp_get_bytes(CHECKSUM_ID, 0u, 2u);
-            
+
             if ((global_ulong & 0xFFFFu) != global_uint)
             {
                 #ifdef ENABLE_DEBUG
@@ -2073,7 +2073,7 @@ void dp_verify_device_info_action(void)
                         }
                         #endif
                     }
-                    #ifdef ENABLE_GPIO_SUPPORT                                
+                    #ifdef ENABLE_GPIO_SUPPORT
                     if (hardware_interface == GPIO_SEL)
                     {
                         if (global_uchar != global_buf2[global_uint])
@@ -2086,7 +2086,7 @@ void dp_verify_device_info_action(void)
                         }
                     }
                     #endif
-                    #ifdef ENABLE_IAP_SUPPORT                
+                    #ifdef ENABLE_IAP_SUPPORT
                     if (hardware_interface == IAP_SEL)
                     {
                         if (global_uchar != actual_iap_urow[global_uint])
@@ -2128,14 +2128,14 @@ void dp_erase(void)
     #ifdef FROM_SUPPORT
     if (dat_support_status & FROM_DAT_SUPPORT_BIT)
     {
-        
+
         global_uchar = (DPUCHAR) dp_get_bytes(FRomAddressMask_ID,0U,1U);
         if (global_uchar & 0x1U)
         {
             global_buf1[1]|=0x80U;
         }
         global_buf1[2] |= (DPUCHAR)(global_uchar >> 1U);
-        
+
     }
     #endif
     #ifdef SECURITY_SUPPORT
@@ -2160,9 +2160,9 @@ void dp_exe_erase(void)
         /* Do not erase UROW.  Bit 14 */
         global_buf1[1u] &= 0xbfu;
     }
-    #endif        
-    
-    
+    #endif
+
+
     opcode = ISC_ERASE;
     IRSCAN_in();
     DRSCAN_in(0u, 23u, global_buf1);
@@ -2183,13 +2183,13 @@ void dp_exe_erase(void)
             dp_program_urow();
         }
         #endif
-        
-        #ifdef ENABLE_IAP_SUPPORT        
+
+        #ifdef ENABLE_IAP_SUPPORT
         if (hardware_interface == IAP_SEL)
         {
             program_urow_nvm();
         }
-        #endif        
+        #endif
         if (error_code != DPE_SUCCESS)
         {
             #ifdef ENABLE_DEBUG
@@ -2197,7 +2197,7 @@ void dp_exe_erase(void)
             #endif
         }
     }
-    
+
     return;
 }
 /****************************************************************************
@@ -2215,7 +2215,7 @@ void dp_poll_erase(void)
         /* check for ROWBUSY and COLBUSY */
         DRSCAN_out(5u, (DPUCHAR*)DPNULL, &global_uchar);
         goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
-        
+
         if ((global_uchar & 0x3U) == 0U)
         {
             break;
@@ -2242,7 +2242,7 @@ void dp_poll_device(void)
         /* check for ROWBUSY, COLBUSY and and MAC fail */
         DRSCAN_out(5u, (DPUCHAR*)DPNULL, &global_uchar);
         goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
-        
+
         if ((global_uchar & 0xbU) == 0U)
         {
             break;
@@ -2252,7 +2252,7 @@ void dp_poll_device(void)
     {
         error_code = DPE_POLL_ERROR;
     }
-    
+
     return;
 }
 
@@ -2268,13 +2268,13 @@ void dp_read_idcode_action(void)
     IRSCAN_in();
     goto_jtag_state(JTAG_RUN_TEST_IDLE,0u);
     DRSCAN_out(IDCODE_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
-    global_ulong = (DPULONG)global_buf1[0] | (DPULONG)global_buf1[1] << 8u | 
+    global_ulong = (DPULONG)global_buf1[0] | (DPULONG)global_buf1[1] << 8u |
     (DPULONG)global_buf1[2] << 16u | (DPULONG)global_buf1[3] << 24u;
     dp_display_text("IDCODE: ");
     dp_display_value(global_ulong,HEX);
     dp_display_text("\r\n");
-    
-    
+
+
     return;
 }
 
@@ -2289,9 +2289,9 @@ void dp_device_info_action(void)
         read_urow_nvm();
         dp_display_urow_nvm();
     }
-    #endif        
-    
-    
+    #endif
+
+
     dp_is_core_configured();
     if (!((device_security_flags & ULUFJ) && ((dat_support_status & SEC_DAT_SUPPORT_BIT) == 0u )))
     {
@@ -2307,11 +2307,11 @@ void dp_device_info_action(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("FSN: ");
     dp_display_array(global_buf1, 6u ,HEX);
-    #endif    
-    
-    
+    #endif
+
+
     dp_output_security();
-    
+
     return;
 }
 
@@ -2322,12 +2322,12 @@ void dp_read_silsig(void)
     goto_jtag_state(JTAG_RUN_TEST_IDLE,USERCODE_CYCLES);
     DRSCAN_out(SILSIG_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
     global_ulong =  (DPULONG)global_buf1[0] | ((DPULONG)global_buf1[1] << 8) | ((DPULONG)global_buf1[2] << 16) | ((DPULONG)global_buf1[3] << 24);
-    
+
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nExpected SILSIG: ");
     dp_display_value(global_ulong,HEX);
     #endif
-    
+
 }
 
 void dp_display_urow(void)
@@ -2336,7 +2336,7 @@ void dp_display_urow(void)
     DPUCHAR programmer;
     DPUCHAR programming_method;
     DPUCHAR software_version;
-    
+
     algo_version = (DPUCHAR)(global_buf2[3] >> 1u) & 0xfu;
     if ((global_buf2[0] & 0x1u) != (global_buf2[0] & 0x20u) >> 5u)
     {
@@ -2347,7 +2347,7 @@ void dp_display_urow(void)
     programming_method = (DPUCHAR)(global_buf2[3] >> 5u) & 0x7u;
     programmer = ((DPUCHAR)(global_buf2[0] >> 6u) & 0x3u) | (DPUCHAR)((DPUCHAR)(global_buf2[1] & 0x3u) << 0x2u);
     software_version = ((DPUCHAR)(global_buf2[1] >> 2u)) | ((DPUCHAR)((DPUCHAR)(global_buf2[2] & 0x1u) << 6u));
-    
+
     dp_display_text("\r\nUser information: ");
     dp_display_text("\r\nCYCLE COUNT: ");
     dp_display_value(cycle_count,DEC);
@@ -2355,7 +2355,7 @@ void dp_display_urow(void)
     dp_display_array(&global_buf2[14],2u, HEX);
     dp_display_text("\r\nDesign Name = ");
     dp_display_array(&global_buf2[4],9u, HEX);
-    
+
     dp_display_text("\r\nProgramming Method: ");
     switch(programming_method)
     {
@@ -2386,7 +2386,7 @@ void dp_display_urow(void)
     dp_display_value((DPULONG)algo_version, DEC);
     dp_display_text("\r\nProgrammer: = ");
     dp_display_value((DPULONG)algo_version, DEC);
-    
+
     dp_display_text("\r\nProgrammer: ");
     switch(programmer)
     {
@@ -2419,10 +2419,10 @@ void dp_display_urow(void)
         break;
     }
     ;
-    
+
     dp_display_text("\r\nSoftware Version = ");
     dp_display_value((DPULONG)software_version, DEC);
-    
+
     dp_display_text("\r\n==================================================");
     return;
 }
@@ -2430,7 +2430,7 @@ void dp_display_urow(void)
 void dp_output_security(void)
 {
     dp_display_text("\r\nSecurity Setting : ");
-    
+
     if (device_security_flags & ULUFP)
     {
         dp_display_text("\r\nFlashROM Write/Erase protected by pass key.");
@@ -2456,7 +2456,7 @@ void dp_output_security(void)
         dp_display_text("\r\nEncrypted FPGA Array Programming Enabled.");
     }
     if (device_family & (AFS_BIT | SFS_BIT))
-    {        
+    {
         if (device_security_flags & ULNW0)
         {
             dp_display_text("\r\nNVM block 0 Write protected by pass key.");
@@ -2482,7 +2482,7 @@ void dp_output_security(void)
             dp_display_text("\r\nEncrypted NVM block 1 Programming Enabled.");
         }
     }
-    
+
     dp_display_text("\r\n==================================================");
     return;
 }
@@ -2492,22 +2492,22 @@ void dp_output_security(void)
 
 void dp_read_urow(void)
 {
-    
+
     /* read UROW */
     dp_vnr();
-    
+
     opcode = ISC_READ_UROW;
     IRSCAN_in();
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_READ_UROW_CYCLES);
     dp_delay(ISC_READ_UROW_DELAY);
     DRSCAN_out(UROW_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf2);
-    
+
     cycle_count =  ((DPUINT)global_buf2[12] >> 6U) | ((DPUINT)global_buf2[13] << 2U);
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nUSER_UROW = ");
     dp_display_array(global_buf2,16u, HEX);
     #endif
-    
+
     return;
 }
 
@@ -2516,7 +2516,7 @@ void dp_program_urow(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nProgramming UROW...");
     #endif
-    
+
     if (((device_security_flags & IS_ERASE_ONLY) == 0U) && (global_buf1[0] & CORE_ERASE_BITS_BYTE0) )
     {
         #ifdef CORE_SUPPORT
@@ -2529,7 +2529,7 @@ void dp_program_urow(void)
         }
         #endif
     }
-    
+
     if ((device_security_flags & PERM_LOCK_BIT) && (device_security_flags & ULAWE))
     {
         device_security_flags |= IS_RESTORE_DESIGN;
@@ -2540,7 +2540,7 @@ void dp_program_urow(void)
         global_buf2[12] |= ((DPUCHAR) (cycle_count << 6));
         global_buf2[13] = (DPUCHAR) (cycle_count >> 2);
     }
-    else 
+    else
     {
         /* Constucting the UROW data */
         if ((device_security_flags & IS_RESTORE_DESIGN) == 0U)
@@ -2549,7 +2549,7 @@ void dp_program_urow(void)
             {
                 global_buf2[global_uchar+14U] = (DPUCHAR) dp_get_bytes(CHECKSUM_ID,global_uchar,1U);
             }
-            
+
             for (global_uchar=0U; global_uchar < 9U; global_uchar++)
             {
                 global_buf2[global_uchar + 4U] = (DPUCHAR) dp_get_bytes(ACT_UROW_DESIGN_NAME_ID,global_uchar,1U);
@@ -2572,49 +2572,49 @@ void dp_program_urow(void)
             global_buf2[1] |= (DC_PROGRAMMING_SW >> 2u) & 0x3u;
             global_buf2[1] |= DC_SOFTWARE_VERSION << 2u;
             global_buf2[2] |= (DC_SOFTWARE_VERSION >> 6u) & 0x1u;
-        }        
+        }
     }
-    
+
     for (global_uchar=0U; global_uchar < global_buf_SIZE; global_uchar++)
     {
         global_buf1[global_uchar] = 0xffU;
     }
-    
+
     for (global_uchar=0U; global_uchar < 8U; global_uchar++)
     {
         opcode = ISC_UFROM_ADDR_SHIFT;
         IRSCAN_in();
         DRSCAN_in(0u,3u,&global_uchar);
-        goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_UFROM_ADDR_SHIFT_CYCLES);    
-        
+        goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_UFROM_ADDR_SHIFT_CYCLES);
+
         opcode = ISC_PROGRAM_UFROM;
         IRSCAN_in();
         DRSCAN_in(0u,FROM_ROW_BIT_LENGTH,global_buf1);
-        goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_UFROM_CYCLES);    
+        goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_UFROM_CYCLES);
         dp_delay(ISC_PROGRAM_UFROM_DELAY);
     }
-    
+
     opcode = ISC_PROGRAM_UROW;
     IRSCAN_in();
     DRSCAN_in(0u,UROW_BIT_LENGTH,global_buf2);
-    goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_UROW_CYCLES);    
-    
+    goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_UROW_CYCLES);
+
     dp_poll_device();
     if (error_code != DPE_SUCCESS)
     {
         error_code = DPE_PROGRAM_UROW_ERROR;
     }
-    
+
     if (error_code == DPE_SUCCESS)
     {
         dp_vnr();
-        
+
         /* readback and verify UROW */
         opcode = ISC_READ_UROW;
         IRSCAN_in();
         goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_READ_UROW_CYCLES);
         dp_delay(ISC_READ_UROW_DELAY);
-        
+
         DRSCAN_out(UROW_BIT_LENGTH,(DPUCHAR*)DPNULL,global_buf1);
         for ( global_uchar = 0U; global_uchar < 16U; global_uchar++ )
         {
@@ -2645,7 +2645,7 @@ void dp_set_aes_mode(void)
     DRSCAN_in(0u, AES_MODE_BIT_LENGTH, &global_uchar);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,AES_MODE_CYCLES);
     return;
-    
+
 }
 /************************************************************************************************************************************/
 /* --- If data is encrypted for a given block, the device must also be encrytpted for that block                                    */
@@ -2656,8 +2656,8 @@ void dp_set_aes_mode(void)
 void dp_check_security_settings(void)
 {
     /* Plain text vs encryption check */
-    if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) || 
-    (Action_code == DP_VERIFY_ACTION_CODE) || (Action_code == DP_ERASE_ARRAY_ACTION_CODE) || (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) || 
+    if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) ||
+    (Action_code == DP_VERIFY_ACTION_CODE) || (Action_code == DP_ERASE_ARRAY_ACTION_CODE) || (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) ||
     (Action_code == DP_VERIFY_ARRAY_ACTION_CODE) || (Action_code == DP_ENC_DATA_AUTHENTICATION_ACTION_CODE) )
     {
         if (dat_support_status & CORE_DAT_SUPPORT_BIT)
@@ -2700,8 +2700,8 @@ void dp_check_security_settings(void)
                 }
                 if (error_code == DPE_SUCCESS)
                 {
-                    if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) || 
-                    (Action_code == DP_ERASE_ARRAY_ACTION_CODE) || (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) || 
+                    if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) ||
+                    (Action_code == DP_ERASE_ARRAY_ACTION_CODE) || (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) ||
                     (Action_code == DP_ENC_DATA_AUTHENTICATION_ACTION_CODE) )
                     {
                         /* If device is keyed, the security match must pass */
@@ -2720,8 +2720,8 @@ void dp_check_security_settings(void)
     }
     if (error_code == DPE_SUCCESS)
     {
-        if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) || 
-        (Action_code == DP_VERIFY_ACTION_CODE) || (Action_code == DP_ERASE_FROM_ACTION_CODE) || (Action_code == DP_PROGRAM_FROM_ACTION_CODE) || 
+        if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) ||
+        (Action_code == DP_VERIFY_ACTION_CODE) || (Action_code == DP_ERASE_FROM_ACTION_CODE) || (Action_code == DP_PROGRAM_FROM_ACTION_CODE) ||
         (Action_code == DP_VERIFY_FROM_ACTION_CODE) )
         {
             if (dat_support_status & FROM_DAT_SUPPORT_BIT)
@@ -2764,7 +2764,7 @@ void dp_check_security_settings(void)
                     }
                     if (error_code == DPE_SUCCESS)
                     {
-                        if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) || 
+                        if ( (Action_code == DP_ERASE_ACTION_CODE) || (Action_code == DP_PROGRAM_ACTION_CODE) ||
                         (Action_code == DP_ERASE_FROM_ACTION_CODE) || (Action_code == DP_PROGRAM_FROM_ACTION_CODE))
                         {
                             /* If device is keyed, the security match must pass */
@@ -2777,14 +2777,14 @@ void dp_check_security_settings(void)
                                 error_code = DPE_CORE_PLAIN_ERROR;
                             }
                         }
-                    }                    
+                    }
                 }
             }
         }
     }
     if (error_code == DPE_SUCCESS)
     {
-        if ( (Action_code == DP_PROGRAM_ACTION_CODE) || (Action_code == DP_VERIFY_ACTION_CODE) || 
+        if ( (Action_code == DP_PROGRAM_ACTION_CODE) || (Action_code == DP_VERIFY_ACTION_CODE) ||
         (Action_code == DP_PROGRAM_NVM_ACTION_CODE) || (Action_code == DP_VERIFY_NVM_ACTION_CODE) ||
         (Action_code == DP_PROGRAM_PRIVATE_CLIENTS_ACTION_CODE) || (Action_code == DP_VERIFY_PRIVATE_CLIENTS_ACTION_CODE)
         )
@@ -2859,7 +2859,7 @@ void dp_check_security_settings(void)
                     #ifdef ENABLE_DEBUG
                     dp_display_text("\r\nNVM block 1 Encryption is enforced. Plain text programming is prohibited.");
                     #endif
-                    
+
                     error_code = DPE_NVM1_ENC_ERROR;
                 }
             }
@@ -3045,14 +3045,14 @@ void dp_check_security_settings(void)
 {
     DPUCHAR dev_enc_status = 0u;
     DPUCHAR dat_enc_status = 0u;
-    
-    /* global_ulong is used as a mask to check if any of the device blocks are protected 
+
+    /* global_ulong is used as a mask to check if any of the device blocks are protected
     with a passkey but the data file has no pass key to match */
     global_ulong = 0u;
-    /* global_uchar is used to mask out checking security settings of blocks that are not 
+    /* global_uchar is used to mask out checking security settings of blocks that are not
     supported in the data file */
     global_uchar = (DPUCHAR) ((dat_support_status & 0x3u) | ((dat_support_status >> 1) & 0x3cu));
-    
+
     /* Get the block encryption settings from the data file. */
     dat_enc_status = (DPUCHAR) (dat_support_status >> 10);
     /* Line up the device security bit settings to match the order of the dat file */
@@ -3081,9 +3081,9 @@ void dp_check_security_settings(void)
     #endif
     #ifdef NVM_SUPPORT
     /* Line up the device security bit settings to match the order of the dat file */
-    dev_enc_status |= (DPUCHAR) ((device_security_flags & ULNC0) | 
-    ((device_security_flags & ULNC1) >> 2) | 
-    ((device_security_flags & ULNC2) >> 4) | 
+    dev_enc_status |= (DPUCHAR) ((device_security_flags & ULNC0) |
+    ((device_security_flags & ULNC1) >> 2) |
+    ((device_security_flags & ULNC2) >> 4) |
     ((device_security_flags & ULNC3) >> 6));
     /* Find out if any of the NVM blocks are protected by a pass key */
     if (!((global_uchar & 0x3Cu) && (dev_enc_status & 0x3Cu)))
@@ -3094,17 +3094,17 @@ void dp_check_security_settings(void)
     /* If the code of a certain block is disabled, the corresponding security bits are ignored */
     dat_enc_status &= 0xC3;
     #endif
-    
-    
+
+
     /*  If the pass key does not exist in the data file, then there are three possiblities:
     1. Data file is compiled for plain text with no security programming.
     2. Data file is encrypted for all the supported blobks.
-    3. Data file is compiled for a cobmbination of both options 1 and 2. 
-    
-    For case # 1 and 3, the test should fail if there is a mismatch with the encryption bit settings.      
-    For case # 2 and 3, the test should fail if the any of the blocks are protected by a pass key and 
+    3. Data file is compiled for a cobmbination of both options 1 and 2.
+
+    For case # 1 and 3, the test should fail if there is a mismatch with the encryption bit settings.
+    For case # 2 and 3, the test should fail if the any of the blocks are protected by a pass key and
     those blocks are not encrypted.
-    
+
     */
     dp_get_bytes(UKEY_ID,0u,1u);
     if (return_bytes == 0u)
@@ -3116,7 +3116,7 @@ void dp_check_security_settings(void)
         This check is only valid for plain text files.  */
         (device_security_flags & global_ulong) )
         {
-            
+
             error_code = DPE_SECURITY_BIT_MISMATCH;
         }
     }
@@ -3141,38 +3141,38 @@ void dp_get_dat_dual_key_flag(void)
     if ( global_uchar )
     {
         device_family |= DUAL_KEY_BIT;
-        
+
         /* setting the AES mode */
         if (dat_support_status & CORE_DAT_ENCRYPTION_BIT)
         {
             AES_mode_value = 2U;
         }
-        else 
+        else
         {
             AES_mode_value = 1U;
         }
         dat_support_status |= CORE_DAT_ENCRYPTION_BIT;
     }
-    
+
     return;
 }
 void dp_read_factory_row(void)
 {
-    
+
     dp_vnr();
     opcode = FACTORY_ADDRESS_SHIFT;
     IRSCAN_in();
     DRSCAN_in(0u, 3u, &global_uchar);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,FACTORY_ADDRESS_SHIFT_CYCLES);
-    
+
     opcode = READ_FACTORY;
     IRSCAN_in();
     goto_jtag_state(JTAG_RUN_TEST_IDLE,READ_FACTORY_CYCLES);
     dp_delay(READ_FACTORY_DELAY);
-    
+
     DRSCAN_out(FACTORY_ROW_BIT_LENGTH, (DPUCHAR*)DPNULL, global_buf1);
-    
-    
+
+
     return;
 }
 
@@ -3185,7 +3185,7 @@ void dp_is_core_configured(void)
     if (!(global_uchar & 0x4U))
     {
         #ifdef ENABLE_DEBUG
-        if ((Action_code == DP_PROGRAM_ACTION_CODE) || (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) || 
+        if ((Action_code == DP_PROGRAM_ACTION_CODE) || (Action_code == DP_PROGRAM_ARRAY_ACTION_CODE) ||
         (Action_code == DP_VERIFY_ACTION_CODE) || (Action_code == DP_VERIFY_ARRAY_ACTION_CODE))
         {
             dp_display_text("\r\nError: Failed to enable FPGA array.");
@@ -3220,7 +3220,7 @@ void dp_das_check(void)
         }
     }
     #endif
-    
+
     return;
 }
 #endif

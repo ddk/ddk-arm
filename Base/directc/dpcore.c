@@ -104,7 +104,7 @@ void dp_program_array_action(void)
     if (error_code == DPE_SUCCESS)
     {
         if (
-        ((device_family & SFS_BIT) == SFS_BIT) &&  
+        ((device_family & SFS_BIT) == SFS_BIT) &&
         (dat_support_status | (NVM0_DAT_SUPPORT_BIT | NVM1_DAT_SUPPORT_BIT | NVM2_DAT_SUPPORT_BIT | NVM3_DAT_SUPPORT_BIT))
         )
         {
@@ -113,7 +113,7 @@ void dp_program_array_action(void)
                 dp_initialize_access_nvm();
             }
         }
-        
+
         if (dat_support_status & NVM0_DAT_SUPPORT_BIT)
         {
             #ifdef NVM_ENCRYPT
@@ -121,7 +121,7 @@ void dp_program_array_action(void)
             if (dat_support_status & NVM0_DAT_ENCRYPTION_BIT)
             {
                 if (
-                    ((device_family & SFS_BIT) == SFS_BIT) && 
+                    ((device_family & SFS_BIT) == SFS_BIT) &&
                     ( (hardware_interface == GPIO_SEL) || (enable_mss_support) )
                     )
                 {
@@ -134,7 +134,7 @@ void dp_program_array_action(void)
             if ((dat_support_status & NVM0_DAT_ENCRYPTION_BIT) == 0U)
             {
                 if (
-                    ((device_family & SFS_BIT) == SFS_BIT) && 
+                    ((device_family & SFS_BIT) == SFS_BIT) &&
                     ( (hardware_interface == GPIO_SEL) || (enable_mss_support) )
                     )
                 {
@@ -199,7 +199,7 @@ void dp_erase_array(void)
     global_buf1[0] = UROW_ERASE_BITS_BYTE0 | CORE_ERASE_BITS_BYTE0;
     global_buf1[1] = UROW_ERASE_BITS_BYTE1 | CORE_ERASE_BITS_BYTE1;
     global_buf1[2] = UROW_ERASE_BITS_BYTE2 | CORE_ERASE_BITS_BYTE2;
-    
+
     dp_exe_erase();
     return;
 }
@@ -211,7 +211,7 @@ void dp_exe_program(void)
     IRSCAN_in();
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_CYCLES);
     dp_poll_device();
-    
+
     return;
 }
 
@@ -223,12 +223,12 @@ void dp_exe_verify(void)
     DRSCAN_in(0u, 2u, &bol_eol_verify);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY0_CYCLES);
     dp_delay(ISC_VERIFY0_DELAY);
-    
+
     dp_poll_device();
     if (error_code != DPE_SUCCESS)
     {
         #ifdef ENABLE_DEBUG
-        dp_display_text("\r\nVerify 0 failed\r\nRow Number : "); 
+        dp_display_text("\r\nVerify 0 failed\r\nRow Number : ");
         dp_display_value(((DPULONG)RowNumber - 1u), DEC);
         #endif
         error_code = DPE_CORE_VERIFY_ERROR;
@@ -237,18 +237,18 @@ void dp_exe_verify(void)
     {
         opcode = ISC_VERIFY0;
         IRSCAN_in();
-        
+
         DRSCAN_out(2u, global_buf1, &global_uchar);
         if ((global_uchar & 0x3U) != 0U)
         {
             #ifdef ENABLE_DEBUG
-            dp_display_text("\r\nVerify 0 failed\r\nRow Number : "); 
+            dp_display_text("\r\nVerify 0 failed\r\nRow Number : ");
             dp_display_value((DPULONG)RowNumber - 1U, DEC);
             #endif
             error_code = DPE_CORE_VERIFY_ERROR;
         }
     }
-    
+
     /* Verify1 */
     if (error_code == DPE_SUCCESS)
     {
@@ -257,18 +257,18 @@ void dp_exe_verify(void)
         DRSCAN_in(0u, 2u, &bol_eol_verify);
         goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY1_CYCLES);
         dp_delay(ISC_VERIFY1_DELAY);
-        
+
         dp_poll_device();
         if (error_code != DPE_SUCCESS)
         {
             #ifdef ENABLE_DEBUG
-            dp_display_text("\r\nVerify 1 failed\r\nRow Number : "); 
+            dp_display_text("\r\nVerify 1 failed\r\nRow Number : ");
             dp_display_value((DPULONG)RowNumber - 1U,DEC);
             #endif
             error_code = DPE_CORE_VERIFY_ERROR;
         }
     }
-    
+
     if (error_code == DPE_SUCCESS)
     {
         opcode = ISC_VERIFY1;
@@ -277,7 +277,7 @@ void dp_exe_verify(void)
         if ((global_uchar & 0x3U) != 0U)
         {
             #ifdef ENABLE_DEBUG
-            dp_display_text("\r\nVerify 1 failed\r\nRow Number : "); 
+            dp_display_text("\r\nVerify 1 failed\r\nRow Number : ");
             dp_display_value((DPULONG)RowNumber - 1u, DEC);
             #endif
             error_code = DPE_CORE_VERIFY_ERROR;
@@ -300,7 +300,7 @@ void dp_increment_address(void)
 {
     opcode = ISC_INCREMENT;
     IRSCAN_in();
-    
+
     global_uchar = 3u;
     DRSCAN_in(0u, 2u, &global_uchar);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_INCREMENT_CYCLES);
@@ -312,21 +312,21 @@ void dp_load_row_address(void)
     DPUCHAR Tiles;
     DPUINT TileSize[132] = {
         1U, 48U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
-        44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 
+        44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,  1U,  1U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
-        44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 
+        44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U, 44U, 44U ,44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U, 44U,
         44U, 44U, 44U,44U, 48U, 1U
     };
-    
+
     DPINT LastSumOfTileRows = 0;
     DPINT SumOfTileRows = 0;
-    DPUCHAR Address[24]= { 
-        0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 
+    DPUCHAR Address[24]= {
+        0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U,
         0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U
     };
     DPUINT IO = 0U;
@@ -354,7 +354,7 @@ void dp_load_row_address(void)
         IO >>= BitsToShift;
         RP = (DPUCHAR)(0x20U >> BitsToShift);
         LH = (DPUCHAR)(0x20U >> BitsToShift);
-        
+
         Address[22] |= (DPUCHAR) (IO << 6U);
         Address[23] |= (DPUCHAR) (IO >> 2U);
         Address[22] |= RP;
@@ -373,13 +373,13 @@ void dp_load_row_address(void)
     AddressIndex = Tiles / 8U;
     BitsToShift = (DPUINT)Tiles - (DPUINT)AddressIndex * 8U;
     Address[AddressIndex] |= (1U << BitsToShift);
-    
+
     /* Shift the address */
     opcode = ISC_ADDRESS_SHIFT;
     IRSCAN_in();
     DRSCAN_in(0u, 192u, Address);
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_ADDRESS_SHIFT_CYCLES);
-    
+
     return;
 }
 #endif
@@ -434,7 +434,7 @@ void dp_verify_array(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nVerifying FPGA Array...");
     #endif
-    
+
     dp_reset_address();
     DataIndex = 0U;
     for ( RowNumber = (DPINT)device_rows - 1; RowNumber >= 0; RowNumber-- )
@@ -474,7 +474,7 @@ void dp_load_row_data(void)
     /* Load one row of FPGA Array data  */
     opcode = ISC_DATA_SHIFT;
     IRSCAN_in();
-    
+
     for ( SDNumber = 1u; SDNumber <= device_SD; SDNumber++ )
     {
         for ( global_ulong = 1u; global_ulong <= 8u; global_ulong++ )
@@ -492,11 +492,11 @@ void dp_program_rlock(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nProgramming RLOCK...");
     #endif
-    
+
     DataIndex = 0u;
     opcode = ISC_DATA_SHIFT;
     IRSCAN_in();
-    
+
     for ( SDNumber = 1u; SDNumber <= device_SD; SDNumber++ )
     {
         for ( global_ulong = 1u; global_ulong <= 8u; global_ulong++ )
@@ -506,7 +506,7 @@ void dp_program_rlock(void)
             DataIndex = DataIndex + ARRAY_ROW_LENGTH;
         }
     }
-    
+
     opcode = ISC_PROGRAM_RLOCK;
     IRSCAN_in();
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_RLOCK_CYCLES);
@@ -518,7 +518,7 @@ void dp_program_rlock(void)
         #endif
         error_code = DPE_PROGRAM_RLOCK_ERROR;
     }
-    
+
     return;
 }
 #endif
@@ -540,7 +540,7 @@ void dp_enc_program_array(void)
     }
     dp_init_aes();
     dp_reset_address();
-    
+
     DataIndex = 0U;
     for ( RowNumber = (DPINT)device_rows - 1; RowNumber >= 0; RowNumber-- )
     {
@@ -588,7 +588,7 @@ void dp_enc_verify_array(void)
     }
     dp_init_aes();
     dp_reset_address();
-    
+
     DataIndex = 0u;
     for ( RowNumber = (DPINT)device_rows - 1; RowNumber >= 0; RowNumber-- )
     {
@@ -622,11 +622,11 @@ void dp_load_enc_row_data(void)
 {
     opcode = DESCRAMBLE;
     IRSCAN_in();
-    
+
     /* Load one row of FPGA Array data  */
     for ( SDNumber = 1u; SDNumber <= device_SD; SDNumber++ )
     {
-        
+
         for ( global_ulong = 0u; global_ulong <= 1u; global_ulong++ )
         {
             dp_get_and_DRSCAN_in(datastream_ID, AES_BLOCK_LENGTH, DataIndex);
@@ -643,11 +643,11 @@ void dp_enc_program_rlock(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nProgramming Rlock...");
     #endif
-    
+
     DataIndex = 0u;
     opcode = DESCRAMBLE;
     IRSCAN_in();
-    
+
     for ( SDNumber = 1u; SDNumber <= device_SD; SDNumber++ )
     {
         for ( global_ulong = 0u; global_ulong <= 1u; global_ulong++ )
@@ -658,12 +658,12 @@ void dp_enc_program_rlock(void)
             DataIndex = DataIndex + AES_BLOCK_LENGTH;
         }
     }	
-    
+
     opcode = ISC_PROGRAM_RDLC;
     IRSCAN_in();
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_RDLC_CYCLES);
     dp_poll_device();
-    
+
     return;
 }
 
@@ -672,16 +672,16 @@ void dp_enc_data_authentication(void)
     #ifdef ENABLE_DEBUG
     dp_display_text("\r\nPerforming Data Authentication...");
     #endif
-    
+
     if (device_family & DUAL_KEY_BIT)
     {
         global_uchar = AES_mode_value;
         dp_set_aes_mode();
     }
-    
+
     dp_init_aes();
     dp_reset_address();
-    
+
     DataIndex = 0u;
     for ( RowNumber = (DPINT)device_rows - 1 ; RowNumber >= 0; RowNumber-- )
     {
@@ -691,7 +691,7 @@ void dp_enc_data_authentication(void)
             dp_display_text(".");
         }
         #endif
-        
+
         dp_load_enc_row_data();
         dp_exe_authentication();
         if (error_code != DPE_SUCCESS)
@@ -716,11 +716,11 @@ void dp_exe_authentication(void)
     goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_NOOP_CYCLES);
     dp_delay(ISC_NOOP_DELAY);
     DRSCAN_out(5u, (DPUCHAR*)DPNULL, &global_uchar);
-    
+
     if (global_uchar & 0x8u)
     {
         error_code = DPE_AUTHENTICATION_FAILURE;
-        #if defined (ENABLE_DEBUG) 
+        #if defined (ENABLE_DEBUG)
         dp_display_text("\r\nFailed to authenticate the encrypted data.\r\n");
         #endif
     }

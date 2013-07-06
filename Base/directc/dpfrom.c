@@ -39,7 +39,7 @@ void dp_erase_from_action(void)
 void dp_program_from_action(void)
 {
     dp_erase_from();
-    
+
     /* Encryption support */
     #ifdef FROM_ENCRYPT
     if (error_code == DPE_SUCCESS)
@@ -69,7 +69,7 @@ void dp_program_from_action(void)
 
 void dp_verify_from_action(void)
 {
-    #ifdef FROM_PLAIN    
+    #ifdef FROM_PLAIN
     /* Plain text support */
     if ((dat_support_status & FROM_DAT_ENCRYPTION_BIT) == 0U)
     {
@@ -93,16 +93,16 @@ void dp_erase_from(void)
     global_buf1[0] = UROW_ERASE_BITS_BYTE0;
     global_buf1[1] = UROW_ERASE_BITS_BYTE1;
     global_buf1[2] = UROW_ERASE_BITS_BYTE2;
-    
+
     /* This is for FROM erase.  Need to get which bits are set to erase from the data file. */
-    
+
     global_uchar = (DPUCHAR) dp_get_bytes(FRomAddressMask_ID,0U,1U);
     if (global_uchar & 0x1U)
     {
         global_buf1[1]|=0x80U;
     }
     global_buf1[2] |= (DPUCHAR)(global_uchar >> 1U);
-    
+
     dp_exe_erase();
     return;
 }
@@ -119,7 +119,7 @@ void dp_program_from(void)
     #endif
     DataIndex=0U;
     global_uint = 0x80U; /* global_uchar could be used in place if FromAddressMaskIndex */
-    
+
     ucFRomAddressMask = (DPUCHAR) dp_get_bytes(FRomAddressMask_ID,0U,1U);
     /* Since RowNumber could be an 8 bit variable or 16 bit, it will wrap around */
     for (FromRowNumber = 7; FromRowNumber >= 0 ;FromRowNumber--)
@@ -131,13 +131,13 @@ void dp_program_from(void)
             IRSCAN_in();
             DRSCAN_in(0u,3u,&global_uchar);
             goto_jtag_state(JTAG_UPDATE_DR,0u);		
-            
+
             opcode = ISC_PROGRAM_UFROM;
             IRSCAN_in();
             dp_get_and_DRSCAN_in(FRomStream_ID, FROM_ROW_BIT_LENGTH, DataIndex);
             goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_UFROM_CYCLES);
             DataIndex = DataIndex + FROM_ROW_BIT_LENGTH;
-            
+
             dp_poll_device();
             if (error_code != DPE_SUCCESS)
             {
@@ -155,10 +155,10 @@ void dp_verify_from(void)
     dp_display_text("\r\nVerifying FlashROM...");
     #endif
     dp_vnr();
-    
+
     DataIndex=0U;
     global_uint=0x80U; /* global_uchar could be used in place if FromAddressMaskIndex */
-    
+
     ucFRomAddressMask = (DPUCHAR) dp_get_bytes(FRomAddressMask_ID,0U,1U);
     for (FromRowNumber=7; FromRowNumber >= 0 ;FromRowNumber--)
     {
@@ -169,21 +169,21 @@ void dp_verify_from(void)
             IRSCAN_in();
             DRSCAN_in(0U,3U,&global_uchar);
             goto_jtag_state(JTAG_UPDATE_DR,0u);
-            
-            
+
+
             opcode = ISC_VERIFY_UFROM;
             IRSCAN_in();
             dp_get_and_DRSCAN_in(FRomStream_ID, FROM_ROW_BIT_LENGTH, DataIndex);
             goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_VERIFY_UFROM_CYCLES);
             dp_delay(ISC_VERIFY_UFROM_DELAY);
-            
+
             dp_poll_device();
             if (error_code == DPE_SUCCESS)
             {
                 opcode = ISC_VERIFY_UFROM;
                 IRSCAN_in();
                 DRSCAN_out(FROM_ROW_BIT_LENGTH,(DPUCHAR*)DPNULL,global_buf1);
-                
+
                 if ((global_buf1[0]&0x3U) != 0x3U)
                 {
                     error_code = DPE_FROM_VERIFY_ERROR;
@@ -191,7 +191,7 @@ void dp_verify_from(void)
                 }
                 DataIndex = DataIndex + FROM_ROW_BIT_LENGTH;
             }
-            else 
+            else
             {
                 FromRowNumber = -1;
             }
@@ -214,32 +214,32 @@ void dp_enc_program_from(void)
         global_uchar = 0U;
         dp_set_aes_mode();
     }
-    
+
     DataIndex=0U;
     global_uint = 0x1U; /* global_uint could be used in place if FromAddressMaskIndex */
-    
+
     ucFRomAddressMask = (DPUCHAR) dp_get_bytes(FRomAddressMask_ID,0U,1U);
-    
+
     for (FromRowNumber = 1;FromRowNumber <= 8 ;FromRowNumber++)
     {
         if (ucFRomAddressMask & global_uint)
         {
             dp_init_aes();
-            
+
             opcode = ISC_DESCRAMBLE_UFROM;
             IRSCAN_in();
             dp_get_and_DRSCAN_in(FRomStream_ID, FROM_ROW_BIT_LENGTH, DataIndex);
-            
+
             goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_DESCRAMBLE_UFROM_CYCLES);
             dp_delay(ISC_DESCRAMBLE_UFROM_DELAY);
-            
+
             DataIndex = DataIndex + FROM_ROW_BIT_LENGTH;
-            
+
             opcode = ISC_PROGRAM_ENC_UFROM;
             IRSCAN_in();
             dp_get_and_DRSCAN_in(FRomStream_ID, FROM_ROW_BIT_LENGTH, DataIndex);
             goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_PROGRAM_ENC_UFROM_CYCLES);
-            
+
             DataIndex = DataIndex + FROM_ROW_BIT_LENGTH;
             dp_poll_device();
             if (error_code != DPE_SUCCESS)
@@ -261,9 +261,9 @@ void dp_read_from(void)
     dp_display_text("\r\n\r\nFlashROM Information: ");
     #endif
     dp_vnr();
-    
-    
-    
+
+
+
     for (FromRowNumber=7; FromRowNumber >= 0 ;FromRowNumber--)
     {
         global_uchar = (DPUCHAR) FromRowNumber;
@@ -271,20 +271,20 @@ void dp_read_from(void)
         IRSCAN_in();
         DRSCAN_in(0u, 3u, &global_uchar);
         goto_jtag_state(JTAG_UPDATE_DR,0u);
-        
+
         opcode = ISC_READ_UFROM;
         IRSCAN_in();
         DRSCAN_in(0u,FROM_ROW_BIT_LENGTH,(DPUCHAR*)DPNULL);
         goto_jtag_state(JTAG_RUN_TEST_IDLE,ISC_READ_UFROM_CYCLES);
         dp_delay(ISC_READ_UFROM_DELAY);
-        
-        
+
+
         DRSCAN_out(FROM_ROW_BIT_LENGTH,(DPUCHAR*)DPNULL,global_buf1);
         dp_display_text("\r\n");
         dp_display_array(global_buf1,FROM_ROW_BYTE_LENGTH,HEX);
     }
     dp_display_text("\r\n==================================================");
-    
+
     return;
 }
 #endif

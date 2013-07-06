@@ -33,7 +33,7 @@ DPUINT dp_postdr_length = POSTDR_LENGTH_VALUE;
 
 /****************************************************************************
 * Purpose: clock data stored in tdi_data into the device.
-* terminate is a flag needed to determine if shifting to pause state should 
+* terminate is a flag needed to determine if shifting to pause state should
 * be done with the last bit shift.
 ****************************************************************************/
 void dp_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR terminate)
@@ -78,8 +78,8 @@ void dp_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR
 /****************************************************************************
 * Purpose:  clock data stored in tdi_data into the device.
 *           capture data coming out of tdo into tdo_data.
-* This function will always clock data starting bit postion 0.  
-* Jtag state machine will always set the pauseDR or pauseIR state at the 
+* This function will always clock data starting bit postion 0.
+* Jtag state machine will always set the pauseDR or pauseIR state at the
 * end of the shift.
 ****************************************************************************/
 void dp_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[])
@@ -152,7 +152,7 @@ void dp_do_shift_in(DPULONG start_bit, DPUINT num_bits, DPUCHAR tdi_data[], DPUC
             {
                 data_buf = 0U;
             }
-            else 
+            else
             {
                 data_buf = tdi_data[idx];
             }
@@ -181,16 +181,16 @@ void dp_do_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[],
     bit_buf = 1U;
     idx = 0U;
     tdo_data[idx] = 0U;
-    
+
     if (tdi_data == (DPUCHAR*)DPNULL)
     {
         data_buf = 0U;
     }
-    else 
-    {   
+    else
+    {
         data_buf = tdi_data[idx];
     }
-    
+
     while (--num_bits)
     {
         if ((bit_buf & 0xffU) == 0U )
@@ -202,7 +202,7 @@ void dp_do_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[],
             {
                 data_buf = 0U;
             }
-            else 
+            else
             {
                 data_buf = tdi_data[idx];
             }
@@ -223,7 +223,7 @@ void dp_do_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[],
         {
             data_buf = 0U;
         }
-        else 
+        else
         {
             data_buf = tdi_data[idx];
         }
@@ -246,7 +246,7 @@ void dp_do_shift_in_out(DPUINT num_bits, DPUCHAR tdi_data[], DPUCHAR tdo_data[],
         {
         }
     }
-    else 
+    else
     {
         if (dp_jtag_tms_tdi_tdo(0U, data_buf&0x1U))
         {
@@ -266,7 +266,7 @@ void dp_get_and_shift_in(DPUCHAR Variable_ID,DPUINT total_bits_to_shift, DPULONG
     DPUCHAR terminate;
     page_start_bit_index = start_bit_index & 0x7U;
     requested_bytes = (DPULONG) (page_start_bit_index + total_bits_to_shift + 7U) >> 3U;
-    
+
     if (current_jtag_state == JTAG_SHIFT_IR)
     {
         if (dp_preir_length > 0U)
@@ -284,12 +284,12 @@ void dp_get_and_shift_in(DPUCHAR Variable_ID,DPUINT total_bits_to_shift, DPULONG
     else
     {
     }
-    
+
     terminate = 0U;
     while (requested_bytes)
     {
         page_buffer_ptr = dp_get_data(Variable_ID,start_bit_index);
-        
+
         if (return_bytes >= requested_bytes )
         {
             return_bytes = requested_bytes;
@@ -300,18 +300,18 @@ void dp_get_and_shift_in(DPUCHAR Variable_ID,DPUINT total_bits_to_shift, DPULONG
                 terminate =0U;
             }
         }
-        else 
+        else
         {
             bits_to_shift = (DPUCHAR) (return_bytes * 8U - page_start_bit_index);
         }
         dp_do_shift_in(page_start_bit_index, bits_to_shift, page_buffer_ptr,terminate);
-        
+
         requested_bytes = requested_bytes - return_bytes;
         total_bits_to_shift = total_bits_to_shift - bits_to_shift;
         start_bit_index += bits_to_shift;
         page_start_bit_index = start_bit_index & 0x7U;
     }
-    
+
     if (current_jtag_state == JTAG_SHIFT_IR)
     {
         if (dp_postir_length > 0U)
@@ -334,14 +334,14 @@ void dp_get_and_shift_in(DPUCHAR Variable_ID,DPUINT total_bits_to_shift, DPULONG
 
 /****************************************************************************
 * Purpose:  Get the data block specified by Variable_ID from the image dat
-* file and clocks it into the device.  Capture the data coming out of tdo 
+* file and clocks it into the device.  Capture the data coming out of tdo
 * into tdo_data
 ****************************************************************************/
 void dp_get_and_shift_in_out(DPUCHAR Variable_ID,DPUCHAR total_bits_to_shift, DPULONG start_bit_index,DPUCHAR* tdo_data)
 {
     requested_bytes = ((DPULONG)total_bits_to_shift + 7u) >> 3u;
     page_buffer_ptr = dp_get_data(Variable_ID,start_bit_index);
-    
+
     if (return_bytes >= requested_bytes )
     {
         return_bytes = requested_bytes;
@@ -353,7 +353,7 @@ void dp_get_and_shift_in_out(DPUCHAR Variable_ID,DPUCHAR total_bits_to_shift, DP
         dp_display_text("\r\nError: Page buffer size is not big enough...");
         #endif
     }
-    
+
     return;
 }
 #endif

@@ -39,7 +39,7 @@
 #define ULNW2               0x00000080U  /* NVM Block 2 write pass key bit */
 #define ULNC2               0x00000100U  /* NVM Block 2 programming encryption bit */
 #define ULNR3               0x00000200U  /* NVM Block 3 Verify pass key bit */
-#define ULNW3               0x00000400U  /* NVM Block 3 write pass key bit */ 
+#define ULNW3               0x00000400U  /* NVM Block 3 write pass key bit */
 #define ULNC3               0x00000800U  /* NVM Block 3 programming encryption bit */
 #define ULARD               0x00001000U  /* Array verification pass key bit */
 #define ULAWE               0x00002000U  /* Array erase and programming pass key bit */
@@ -50,7 +50,7 @@
 #define ULUFE               0x00040000U  /* FROM programming encyption bit */
 #define ULUPC               0x00080000U  /* Pass key bit */
 #define ULARE               0x00100000U  /* Array programming encryption bit */
-#define ULUWE               0x00200000U  /* UROW Erase and programming protection */ 
+#define ULUWE               0x00200000U  /* UROW Erase and programming protection */
 #define ULOPT0              0x00400000U
 #define ULOPT1              0x00800000U
 #define SEC_KEY_OK          0x01000000U

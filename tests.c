@@ -6,19 +6,12 @@
  * All rights reserved.
  *
  * This file is part of Die Datenkrake (DDK).
- * 
- * Die Datenkrake is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
-
- * Die Datenkrake is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Die Datenkrake.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <dmitry at nedos dot net> and <ths at modzero dot ch> wrote this file. As
+ * long as you retain this notice you can do whatever you want with this stuff.
+ * If we meet some day, and you think this stuff is worth it, you can buy us a
+ * beer in return. Die Datenkrake Project.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -133,7 +126,7 @@ void ddk_functiontests(void)
     puts("[*] HW function tests.");
     dp_prog_main();
 
-    if(g_test_done) 
+    if(g_test_done)
         return;
 
     buf1_enable();
@@ -189,7 +182,7 @@ void ddk_functiontests(void)
     fpga_rst_low();
     fpga_tst_high();
 
-    
+
     for(dir=0; dir<2; dir++) {
 
         if(dir == 1) {
@@ -199,7 +192,7 @@ void ddk_functiontests(void)
             fpga_tmd_low();
             puts("[*] Testing CH1-4");
         }
-        
+
         printf("[+] test vector: %x: ", test_vector_set(TEST_V1));
 
         if(test_vector_read(dir) == TEST_V1)
@@ -235,7 +228,7 @@ void ddk_functiontests(void)
             error = 1;
         }
     }
-    
+
     if(error == 1)
         g_test_done = 0;
     else
@@ -311,7 +304,7 @@ void ddk_manual_tests(void)
     fpga_rst_low();
     fpga_tst_high();
 
-    
+
     for(dir=0; dir<2; dir++) {
 
         if(dir == 1) {
@@ -321,7 +314,7 @@ void ddk_manual_tests(void)
             fpga_tmd_low();
             puts("[*] Testing CH1-4");
         }
-        
+
         printf("[+] test vector: %x: ", test_vector_set(TEST_V1));
 
         if(test_vector_read(dir) == TEST_V1)
@@ -357,7 +350,7 @@ void ddk_manual_tests(void)
             error = 1;
         }
     }
-    
+
     if(error == 1)
         puts("An error occured!");
 
@@ -431,13 +424,13 @@ int hw_test_main(void)
 
     hw_test_init();
     jtag_init();
-    
+
     ddk_functiontests();
 
     fpga_tst_low();
     io_fpga_disable();
     puts("Tests done");
-    
+
     io_init();
     io_fpga_enable();
 

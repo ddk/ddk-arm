@@ -6,19 +6,12 @@
  * All rights reserved.
  *
  * This file is part of Die Datenkrake (DDK).
- * 
- * Die Datenkrake is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
-
- * Die Datenkrake is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Die Datenkrake.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <dmitry at nedos dot net> and <ths at modzero dot ch> wrote this file. As
+ * long as you retain this notice you can do whatever you want with this stuff.
+ * If we meet some day, and you think this stuff is worth it, you can buy us a
+ * beer in return. Die Datenkrake Project.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -56,7 +49,7 @@ volatile uint32_t g_utick = 0;
 void jtag_init(void)
 {
     uint32_t i=0;
-    
+
     PinCfg.Funcnum      = 0;    // GPIO
     PinCfg.OpenDrain    = 0;
     PinCfg.Pinmode      = 0;
@@ -98,7 +91,7 @@ void jtag_init(void)
 
     GPIO_ClearValue(JTAG_TMSPORT, JTAG_TMS);
     GPIO_ClearValue(JTAG_TCKPORT, JTAG_TCK);
-    
+
     GPIO_ClearValue(JTAG_TRSTPORT, JTAG_TRST);
     GPIO_SetValue(  JTAG_TRSTPORT, JTAG_TRST);
 

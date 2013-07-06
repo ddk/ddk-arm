@@ -111,7 +111,7 @@
 #define DAT_SUPPORT_STATUS_OFFSET   39u
 #define CORE_DAT_SUPPORT_BIT        0x0001u
 #define FROM_DAT_SUPPORT_BIT        0x0002u
-#define NVM_DAT_SUPPORT_BIT         0x0004u 
+#define NVM_DAT_SUPPORT_BIT         0x0004u
 #define NVM0_DAT_SUPPORT_BIT        0x0008u
 #define NVM1_DAT_SUPPORT_BIT        0x0010u
 #define NVM2_DAT_SUPPORT_BIT        0x0020u
@@ -166,9 +166,9 @@
 #endif
 
 /* Security code enable flags */
-#ifdef SECURITY_SUPPORT 
+#ifdef SECURITY_SUPPORT
 #define SEC_CODE_SUPPORT_BIT 0x0100u
-#else 
+#else
 #define SEC_CODE_SUPPORT_BIT 0x0000u
 #endif
 
@@ -414,12 +414,12 @@
 #define POLL_DELAY                     100u
 #define ISC_ERASE_CYCLES               3u
 #define ERASE_POLL_DELAY               1000u
-#define HIGHZ_CYCLES                   1u                                       
+#define HIGHZ_CYCLES                   1u
 #define DESELECT_ALL_TILES_CYCLES      1u
-#define AES_INIT_CYCLES                3u                                      
+#define AES_INIT_CYCLES                3u
 #define AES_INIT_DELAY                 190u
 #define AES_MODE_CYCLES                1u
-#define USERCODE_CYCLES                3u                                       
+#define USERCODE_CYCLES                3u
 
 
 /* ARRAY delay and cycle parameters */
@@ -437,7 +437,7 @@
 #define ISC_PROGRAM_RDLC_CYCLES        1u
 #define READ_FACTORY_DELAY             330u
 #define READ_FACTORY_CYCLES            3u
-#define FACTORY_ADDRESS_SHIFT_CYCLES   1u                                       
+#define FACTORY_ADDRESS_SHIFT_CYCLES   1u
 
 /* FROM delay and cycle parameters */
 #define ISC_READ_UFROM_CYCLES          3u

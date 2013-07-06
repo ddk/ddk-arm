@@ -34,10 +34,10 @@
 #define ISC_DISABLE              0x81u
 #define ISC_NOOP                 0x84u
 #define DESELECT_ALL_TILES       0xC0u
-/* Erase opcodes */              
+/* Erase opcodes */
 #define ISC_ERASE                0x85u
 
-/* UROW opcodes */               
+/* UROW opcodes */
 #define ISC_PROGRAM_UROW         0xA7u
 #define ISC_READ_UROW            0xA8u
 #define ISC_PROGRAM_RLOCK        0x8Cu
@@ -89,7 +89,7 @@
 #define FACTORY_ROW_BIT_LENGTH   128u
 
 /* Action Names -- match actions function */
-/* These codes are passed to the main entry function "dp_top" to indicate 
+/* These codes are passed to the main entry function "dp_top" to indicate
 * which action to perform */
 #define DP_NO_ACTION_FOUND                      0u
 #define DP_DEVICE_INFO_ACTION_CODE              1u

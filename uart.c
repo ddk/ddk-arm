@@ -6,19 +6,12 @@
  * All rights reserved.
  *
  * This file is part of Die Datenkrake (DDK).
- * 
- * Die Datenkrake is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
-
- * Die Datenkrake is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Die Datenkrake.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <dmitry at nedos dot net> and <ths at modzero dot ch> wrote this file. As
+ * long as you retain this notice you can do whatever you want with this stuff.
+ * If we meet some day, and you think this stuff is worth it, you can buy us a
+ * beer in return. Die Datenkrake Project.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -86,13 +79,13 @@
 /* UART0 */
 
 void vUART0Task(void *p)
-{  
+{
     unsigned int v=0;
     uint8_t testchar = 1;
-    
+
     const portTickType xDelay = 10 / portTICK_RATE_MS;
 
-    
+		
     ( void ) p;
 
     //puts("sending bytes 00h-ffh:");
@@ -103,20 +96,20 @@ void vUART0Task(void *p)
             //putchar(c);
         }
         vTaskDelay( xDelay );
-        
+
         // stop here
         if(c == 0) {
 
         }
 
         v++;
-    }  
+    }
 }
 
 /* UART1 - Communication with FPGA */
 
 void vUART1Task(void *p)
-{  
+{
     unsigned int v=0;
     const portTickType xDelay = 10 / portTICK_RATE_MS;
 
@@ -131,15 +124,15 @@ void vUART1Task(void *p)
         }
 
         vTaskDelay( xDelay );
-   
+
         v++;
-    }  
+    }
 }
 
 /* UART2 - Communication with FPGA */
 
 void vUART2Task(void *p)
-{  
+{
     unsigned int v=0;
     const portTickType xDelay = 10 / portTICK_RATE_MS;
 
@@ -154,15 +147,15 @@ void vUART2Task(void *p)
         }
 
         vTaskDelay( xDelay );
-   
+
         v++;
-    }  
+    }
 }
 
 /* UART3 - currently disabled and used as i/o */
 
 void vUART3Task(void *p)
-{  
+{
     unsigned int v=0;
     const portTickType xDelay = 10 / portTICK_RATE_MS;
 
@@ -176,9 +169,9 @@ void vUART3Task(void *p)
         }
 
         vTaskDelay( xDelay );
-   
+
         v++;
-    }  
+    }
 }
 
 
@@ -213,7 +206,7 @@ void uart0_init(const uint32_t BaudRate, const bool DoubleSpeed)
 
     // Enable UART Transmit
     UART_TxCmd((LPC_UART_TypeDef *)CONSOLE_UART_PORT, ENABLE);
-    
+
     UART_IntConfig((LPC_UART_TypeDef *)CONSOLE_UART_PORT, UART_INTCFG_RBR, ENABLE);
     NVIC_EnableIRQ(UART0_IRQn);
 }
@@ -239,7 +232,7 @@ void uart0_shutdown(void)
     GPIO_SetValue(UART0_PORTNUM, (1<<UART0_TX_PINNUM));
 
     UART_TxCmd((LPC_UART_TypeDef *)CONSOLE_UART_PORT, DISABLE);
-    
+
     UART_IntConfig((LPC_UART_TypeDef *)CONSOLE_UART_PORT, UART_INTCFG_RBR, DISABLE);
     NVIC_DisableIRQ(UART0_IRQn);
 }
@@ -261,12 +254,12 @@ void UART0_IRQHandler(void)
             // RX Line Status / Error
             temp = CONSOLE_UART_PORT->LSR;
             break;
-            
+
         case 4:
             g_u0char = UART_ReceiveByte((LPC_UART_TypeDef *)CONSOLE_UART_PORT);
             g_u0char_available=1;
             break;
-        
+
         case 0xc:
             // Character Time-out indication
             temp = CONSOLE_UART_PORT->RBR;
@@ -278,7 +271,7 @@ void UART0_IRQHandler(void)
         default:
             break;
     }
-   
+
    return;
 }
 
@@ -287,12 +280,12 @@ void UART0_IRQHandler(void)
 int getchar_nb(void)
 {
     // XXX TODO: add queue in rx interrupt routine
-    
+
     if (g_u0char_available) {
         g_u0char_available=0;
         return g_u0char;
     }
-    
+
     g_u0char_available=0;
     return -1;
 
@@ -307,7 +300,7 @@ int __getchar(void)
 
    ch = g_u0char;
    g_u0char_available = 0;
-   
+
    return ch;
 }
 
@@ -366,7 +359,7 @@ void uart1_init(const uint32_t BaudRate, const bool DoubleSpeed)
 
     // Enable UART Transmit
     // XXX UART_TxCmd((LPC_UART_TypeDef *)FPGA_UART1_PORT, ENABLE);
-    
+
     UART_IntConfig((LPC_UART_TypeDef *)FPGA_UART1_PORT, UART_INTCFG_RBR, ENABLE);
     NVIC_EnableIRQ(UART1_IRQn);
 }
@@ -387,12 +380,12 @@ void UART1_IRQHandler(void)
             // RX Line Status / Error
             temp = FPGA_UART1_PORT->LSR;
             break;
-            
+
         case 4:
             g_u1char = UART_ReceiveByte((LPC_UART_TypeDef *)FPGA_UART1_PORT);
             g_u1char_available=1;
             break;
-        
+
         case 0xc:
             // Character Time-out indication
             temp = FPGA_UART1_PORT->RBR;
@@ -404,7 +397,7 @@ void UART1_IRQHandler(void)
         default:
             break;
     }
-   
+
    return;
 }
 
@@ -417,7 +410,7 @@ int getchar1_nb(void)
         g_u1char_available=0;
         return g_u1char;
     }
-    
+
     g_u1char_available=0;
     return -1;
 }
@@ -432,7 +425,7 @@ int getchar1(void)
 
    ch = g_u1char_available;
    g_u1char_available = 0;
-   
+
    return ch;
 }
 
@@ -470,7 +463,7 @@ void uart2_init(const uint32_t BaudRate, const bool DoubleSpeed)
 
     // Enable UART Transmit
     UART_TxCmd((LPC_UART_TypeDef *)FPGA_UART_PORT, ENABLE);
-    
+
     UART_IntConfig((LPC_UART_TypeDef *)FPGA_UART_PORT, UART_INTCFG_RBR, ENABLE);
     NVIC_EnableIRQ(UART2_IRQn);
 }
@@ -491,12 +484,12 @@ void UART2_IRQHandler(void)
             // RX Line Status / Error
             temp = FPGA_UART_PORT->LSR;
             break;
-            
+
         case 4:
             g_u2char = UART_ReceiveByte((LPC_UART_TypeDef *)FPGA_UART_PORT);
             g_u2char_available=1;
             break;
-        
+
         case 0xc:
             // Character Time-out indication
             temp = FPGA_UART_PORT->RBR;
@@ -508,7 +501,7 @@ void UART2_IRQHandler(void)
         default:
             break;
     }
-   
+
    return;
 }
 
@@ -529,7 +522,7 @@ int getchar2_nb(void)
         g_u2char_available=0;
         return g_u2char;
     }
-    
+
     g_u2char_available=0;
     return -1;
 }
@@ -544,7 +537,7 @@ int getchar2(void)
 
    ch = g_u2char_available;
    g_u2char_available = 0;
-   
+
    return ch;
 }
 
@@ -576,7 +569,7 @@ void uart3_init(const uint32_t BaudRate, const bool DoubleSpeed)
     PinCfg.OpenDrain = 0;
     PinCfg.Pinmode = 0;
     PINSEL_ConfigPin(&PinCfg);
-    
+
     // leave TX3 untouched, we are currently using TX3 as i/o!
     //PinCfg.Pinnum = UART3_TX_PINNUM;
     //PINSEL_ConfigPin(&PinCfg);
@@ -596,7 +589,7 @@ void uart3_init(const uint32_t BaudRate, const bool DoubleSpeed)
 
     // Enable UART Transmit
     //UART_TxCmd((LPC_UART_TypeDef *)FPGA_UART3_PORT, ENABLE);
-    
+
     UART_IntConfig((LPC_UART_TypeDef *)FPGA_UART3_PORT, UART_INTCFG_RBR, ENABLE);
     NVIC_EnableIRQ(UART3_IRQn);
 }
@@ -617,12 +610,12 @@ void UART3_IRQHandler(void)
             // RX Line Status / Error
             temp = FPGA_UART3_PORT->LSR;
             break;
-            
+
         case 4:
             g_u3char = UART_ReceiveByte((LPC_UART_TypeDef *)FPGA_UART3_PORT);
             g_u3char_available=1;
             break;
-        
+
         case 0xc:
             // Character Time-out indication
             temp = FPGA_UART3_PORT->RBR;
@@ -634,7 +627,7 @@ void UART3_IRQHandler(void)
         default:
             break;
     }
-   
+
    return;
 }
 
@@ -655,7 +648,7 @@ int getchar3_nb(void)
         g_u3char_available=0;
         return g_u3char;
     }
-    
+
     g_u3char_available=0;
     return -1;
 }
@@ -670,7 +663,7 @@ int getchar3(void)
 
    ch = g_u3char_available;
    g_u3char_available = 0;
-   
+
    return ch;
 }
 
