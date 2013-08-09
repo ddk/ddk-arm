@@ -265,3 +265,14 @@ void io_fpga_register_write(uint8_t reg, uint8_t data)
 
 }
 
+/* Read 8-bit address "reg" on FPGA */
+/* TODO: Eventually implement return values */
+void io_fpga_register_read(uint8_t reg)
+{
+    fpga_dwe_low();
+
+    io_fpga_register_setaddress(reg);
+
+    fpga_bus_dataclock_toggle();
+
+}

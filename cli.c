@@ -159,7 +159,7 @@ static const commandList_t commandList [] =
     { "l",      2,  2, CMDTYPE_FUNCTION,  { prv_cli_led_ctl     }, "LED control single",                "'l <num> <status>' control LEDs - status = 0 or 1" },
     { "L",      1,  1, CMDTYPE_FUNCTION,  { prv_cli_led_ctl_all }, "LED control all",                   "'L <status>' - control all LEDs - status = 0 or 1" },
     { "w",      2,  2, CMDTYPE_FUNCTION,  { prv_cli_data_write  }, "Data write",                        "'w <reg> <data>' write 8-bit data <data> to register <reg>" },
-    { "r",      2,  1, CMDTYPE_FUNCTION,  { prv_cli_data_read   }, "Data read",                         "'r' read data - not implemented" },
+    { "r",      1,  1, CMDTYPE_FUNCTION,  { prv_cli_data_read   }, "Data read",                         "'r <reg>' read register <reg>" },
     { NULL,     0,  0, CMDTYPE_FUNCTION,  { NULL                }, NULL,                                NULL },
 };
 
@@ -567,8 +567,12 @@ static int __attribute__ ((unused)) prv_cli_data_write (int argc __attribute__ (
 // ******************************************************** ** ** **  **    *       *         *               *
 static int __attribute__ ((unused)) prv_cli_data_read (int argc __attribute__ ((unused)), portCHAR **argv __attribute__ ((unused)))
 {
-   printf("ERR: Implement me.\n");
-   return 0;
+    unsigned char reg = 0;
+
+    reg = strtol(argv[0], NULL, 16) & 0xff;
+
+    io_fpga_register_read(reg);
+    return 0;
 }
 
 

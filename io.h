@@ -109,6 +109,13 @@ void task_databus(void *p);
 void io_fpga_register_write(uint8_t addr, uint8_t data);
 
 /*!
+   Read data from an FPGA register. This function reads from a register address of the FPGA.
+   @param[in]  addr  The destination register's address.
+   @param[in]  data  The data byte.
+ */
+void io_fpga_register_read(uint8_t addr);
+
+/*!
    FPGA databus testcase.
  */
 uint8_t io_fpga_bus_test(void);
