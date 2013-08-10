@@ -108,6 +108,11 @@ void vUART0Task(void *p)
 
 /* UART1 - Communication with FPGA */
 
+volatile unsigned char g_u1char = 0;
+volatile unsigned char g_u1char_available = 0;
+
+unsigned int u1_ack, u1_adr, u1_dat;
+
 void vUART1Task(void *p)
 {
     unsigned int v=0;
@@ -116,10 +121,21 @@ void vUART1Task(void *p)
     ( void ) p;
 
     while (1) {
-        int c = getchar1_nb();
-        if(c > 0) {
-            printf("u1 read: ");
-            print_hex_byte(c);
+
+        if(g_u1char_available) {
+            g_u1char_available=0;
+
+            if(u1_ack == 1) {
+                printf("ACK");
+            } else {
+                printf("NACK");
+            }
+            printf(", adr: ");
+            print_hex_byte(u1_adr);
+
+            printf(", dat: ");
+            print_hex_byte(u1_dat);
+
             puts("");
         }
 
@@ -364,9 +380,6 @@ void uart1_init(const uint32_t BaudRate, const bool DoubleSpeed)
     NVIC_EnableIRQ(UART1_IRQn);
 }
 
-volatile unsigned char g_u1char = 0;
-volatile unsigned char g_u1char_available = 0;
-
 void UART1_IRQHandler(void)
 {
     g_u1char_available=0;
@@ -384,6 +397,9 @@ void UART1_IRQHandler(void)
         case 4:
             g_u1char = UART_ReceiveByte((LPC_UART_TypeDef *)FPGA_UART1_PORT);
             g_u1char_available=1;
+            u1_ack = u1_adr;
+            u1_adr = u1_dat;
+            u1_dat = g_u1char;
             break;
 
         case 0xc:
