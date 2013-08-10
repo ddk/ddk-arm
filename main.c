@@ -243,9 +243,8 @@ void ddk_init(void)
 #ifdef WITH_UART3
     uart3_init(115200, 0); // temporarily disabled and used as i/o
 #endif
+
     // 4. enable certain buffers if necessary
-    //buf1_enable();
-    //buf2_enable();
 
     // 5. init misc i/o
     io_init();
