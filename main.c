@@ -163,7 +163,7 @@ int main(void)
     if(ret != pdTRUE)
     for(;;);
 
-/*
+#ifdef WITH_UART2
     ret = xTaskCreate( vUART2Task,
         _STR "UART2",
         mainBASIC_UART2_STACK_SIZE,
@@ -174,7 +174,7 @@ int main(void)
 
     if(ret != pdTRUE)
     for(;;);
-*/
+#endif
 
 #ifdef WITH_UART3
     ret = xTaskCreate( vUART3Task,
@@ -235,6 +235,10 @@ void ddk_init(void)
     // 3. comms
     uart0_init(115200, 0);
     uart1_init(115200, 0);
+
+#ifdef WITH_UART2
+    uart2_init(115200, 0); // temporarily disabled and used as i/o
+#endif
 
 #ifdef WITH_UART3
     uart3_init(115200, 0); // temporarily disabled and used as i/o
