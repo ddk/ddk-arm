@@ -51,8 +51,10 @@ int getchar_nb(void);
 // for stdio (printf, scanf, etc) - blocking!
 int __getchar(void);
 void __putchar(int);
+#ifndef __GNUC__
 void putchar(int);
 int getchar(void);
+#endif
 
 void uart1_init(const uint32_t , const bool);
 void UART1_IRQHandler(void);
