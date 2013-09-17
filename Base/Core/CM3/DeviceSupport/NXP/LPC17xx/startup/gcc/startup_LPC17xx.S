@@ -16,7 +16,7 @@
 // </h>
 */
 
-    .equ    Stack_Size, 0x00000100
+    .equ    Stack_Size, 0x00002000
     .section ".stack", "w"
     .align  3
     .globl  __cs3_stack_mem
@@ -26,8 +26,7 @@ __cs3_stack_mem:
     .space  Stack_Size
     .endif
     .size   __cs3_stack_mem,  . - __cs3_stack_mem
-    .set    __cs3_stack_size, . - __cs3_stack_mem
-
+    .set    __cs3_stack_size, . - __cs3_stack_mem 
 
 /*
 // <h> Heap Configuration
@@ -35,7 +34,7 @@ __cs3_stack_mem:
 // </h>
 */
 
-    .equ    Heap_Size,  0x00001000
+    .equ    Heap_Size,  0x00002000
 
     .section ".heap", "w"
     .align  3
@@ -66,10 +65,10 @@ __cs3_interrupt_vector_cortex_m:
     .long   0                           /* Reserved                     */
     .long   0                           /* Reserved                     */
     .long   0                           /* Reserved                     */
-    .long   SVC_Handler                 /* SVCall Handler               */
+    .long   vPortSVCHandler             /* SVC_Handler                  */ /* SVCall Handler               */
     .long   DebugMon_Handler            /* Debug Monitor Handler        */
     .long   0                           /* Reserved                     */
-    .long   PendSV_Handler              /* PendSV Handler               */
+    .long   xPortPendSVHandler          /* PendSV_Handler               */ /* PendSV Handler               */
     .long   SysTick_Handler             /* SysTick Handler              */
 
     /* External Interrupts */
@@ -124,6 +123,17 @@ __cs3_interrupt_vector_cortex_m:
 __cs3_reset_cortex_m:
     .fnstart
 .if (RAM_MODE)
+/* init data section in ram */
+    LDR     R0, =__cs3_region_init_ram
+    LDR     R1, =__cs3_region_start_ram
+    LDR     R2, =_edata
+copy_loop:
+    LDR     R3, [R0]
+    STR     R3, [R1]
+    ADD     R0, #4
+    ADD     R1, #4
+    CMP     R1, R2
+    BLT     copy_loop
 /* Clear .bss section (Zero init) */
 	MOV     R0, #0
 	LDR     R1, =__bss_start__

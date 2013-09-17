@@ -15,7 +15,7 @@ CFLAGS  += -IBase/FreeRTOSV7.3.0/FreeRTOS/Source/include
 CFLAGS  += -IBase/FreeRTOSV7.3.0/FreeRTOS/Source/portable/GCC/ARM_CM3
 CFLAGS  += -IBase/CDL/Drivers/include
 CFLAGS  += -IBase/directc
-CFLAGS  += -D RAM_MODE=0
+CFLAGS  += -D RAM_MODE=1
 LFLAGS	= -Wl,--gc-sections -Tlpc17xx.ld
 CPFLAGS	= -Obinary
 CRT0    = ./Base/Core/CM3/DeviceSupport/NXP/LPC17xx/startup/gcc/startup_LPC17xx.S

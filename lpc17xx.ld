@@ -24,8 +24,8 @@ MEMORY
   rom (rx)  : ORIGIN = 0x00000000, LENGTH = 256K
   ram (rwx) : ORIGIN = 0x10000000, LENGTH =  32K
   
-  ram1(rwx) : ORIGIN = 0x2007C000, LENGTH = 16k
-  ram2(rwx) : ORIGIN = 0x20080000, LENGTH = 16k
+  sram1(rwx) : ORIGIN = 0x2007C000, LENGTH = 16k
+  sram2(rwx) : ORIGIN = 0x20004000, LENGTH = 16k
 }
 
 /* These force the linker to search for particular symbols from
@@ -164,17 +164,17 @@ SECTIONS
 	.usb_ram (NOLOAD):
 	{
 		*.o (USB_RAM)
-	} > ram2
+	} > sram2
   .heap (NOLOAD) :
   {
     *(.heap)
-  } >ram
+  } >sram1
   .stack (__cs3_stack - __cs3_stack_size) (NOLOAD):
   {
     *(.stack)
     _estack = .;
     PROVIDE(estack = .);
-  } >ram
+  } >sram1
 
   __cs3_region_init_ram = LOADADDR (.data);
   __cs3_region_init_size_ram = _edata - __cs3_region_start_ram;
