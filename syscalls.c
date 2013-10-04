@@ -1,167 +1,109 @@
-/***********************************************************************/
-/*                                                                     */
-/*  SYSCALLS.C:  System Calls Remapping                                */
-/*  most of this is from newlib-lpc and a Keil-demo                    */
-/*                                                                     */
-/*  these are "reentrant functions" as needed by                       */
-/*  the WinARM-newlib-config, see newlib-manual                        */
-/*  collected and modified by Martin Thomas                            */
-/*  TODO: some more work has to be done on this                        */
-/***********************************************************************/
+/*
+ * Copyright (c) 2013, The DDK Project
+ *    Dmitry Nedospasov <dmitry at nedos dot net>
+ *    Thorsten Schroeder <ths at modzero dot ch>
+ *    Andrew Karpow <andy at ndyk dot de>
+ *
+ * All rights reserved.
+ *
+ * This file is part of Die Datenkrake (DDK).
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <dmitry at nedos dot net>, <ths at modzero dot ch> and <andy at ndyk dot de>
+ *  wrote this file. As long as you retain this notice you can do whatever 
+ * you want with this stuff. If we meet some day, and you think this stuff is 
+ * worth it, you can buy us a beer in return. Die Datenkrake Project.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE DDK PROJECT BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * File: syscalls.c
+ * Description: Newlib syscall wrapper for libc compatibility
+ *
+ */
 
-#include <stdlib.h>
-#include <reent.h>
+#include <stdio.h>
+#include <errno.h>
 #include <sys/stat.h>
 
 #include "uart.h"
 
-// new code for _read_r provided by Alexey Shusharin - Thanks
-_ssize_t _read_r(struct _reent *r, int file, void *ptr, size_t len)
+#undef errno
+extern int errno;
+
+int _read(int file, char *ptr, int len)
 {
     char c;
     int  i;
-    unsigned char *p;
-
-    p = (unsigned char*)ptr;
 
     for (i = 0; i < len; i++)
     {
-	c = __getchar();
+        c = __getchar();
 
-	*p++ = c;
-	__putchar(c);
+        *ptr++ = c;
+        __putchar(c);
 
-	if (c == 0x0D && i <= (len - 2))
-	{
-	    *p = 0x0A;
-	    __putchar(0x0A);
-	    return i + 2;
-	}
+        if(c == '\r' && i < len - 1)
+        {
+            *ptr = '\n';
+            __putchar(*ptr);
+            i++;
+            break;
+        }
     }
     return i;
 }
 
-
-#if 0
-// old version - no longer in use
-_ssize_t _read_r(
-	struct _reent *r, 
-	int file, 
-	void *ptr, 
-	size_t len)
-{
-    char c;
-    int  i;
-    unsigned char *p;
-
-    p = (unsigned char*)ptr;
-
-    for (i = 0; i < len; i++) {
-	// c = uart0Getch();
-	c = uart0GetchW();
-	if (c == 0x0D) {
-	    *p='\0';
-	    break;
-	}
-	*p++ = c;
-	uart0Putch(c);
-    }
-    return len - i;
-}
-#endif
-
-_ssize_t _write_r (
-	struct _reent *r,
-	int file,
-	const void *ptr,
-	size_t len)
+int _write(int file, char *ptr, int len)
 {
     int i;
-    const uint8_t *p =
-	(const uint8_t *) ptr;
 
-    for (i = 0; i < len; i++) {
-	if (*p == '\n' ) {
-	    __putchar('\r');
-	}
-	__putchar(*p++);
-    }
+    for (i = 0; i < len; i++)
+        __putchar(*ptr++);
 
     return len;
 }
 
-int _close_r(
-	struct _reent *r, 
-	int file)
+int _close(int file) {
+    return 0;
+}
+
+
+int _lseek(int file, int ptr, int dir)
 {
     return 0;
 }
 
-_off_t _lseek_r(
-	struct _reent *r, 
-	int file, 
-	_off_t ptr, 
-	int dir)
-{
-    return (_off_t)0;	/*  Always indicate we are at file beginning.	*/
-}
-
-
-int _fstat_r(
-	struct _reent *r, 
-	int file, 
-	struct stat *st)
-{
-    /*  Always set as character device.				*/
-    st->st_mode = S_IFCHR;	
-    /* assigned to strong type with implicit 	*/
-    /* signed/unsigned conversion.  Required by 	*/
-    /* newlib.					*/
-
-    return 0;
-}
-
-int _isatty(int file)
-{
+int _isatty(int file) {
     return 1;
 }
 
-void _exit (int n) {
-label:  goto label; /* endless loop */
+int _fstat(int file, struct stat *st)
+{
+    st->st_mode = S_IFCHR;
+    return 0;
 }
 
-/* "malloc clue function" */
+extern char __cs3_heap_end[]; /* end is set in the linker command   */
+static char *heap_ptr;        /* Points to current end of the heap. */
 
-/**** Locally used variables. ****/
-extern char __cs3_heap_end[];              /*  end is set in the linker command 	*/
-/* file and is the end of statically 	*/
-/* allocated data (thus start of heap).	*/
-
-static char *heap_ptr;		/* Points to current end of the heap.	*/
-
-/************************** _sbrk_r *************************************/
-/*  Support function.  Adjusts end of heap to provide more memory to	*/
-/* memory allocator. Simple and dumb with no sanity checks.		*/
-/*  struct _reent *r	-- re-entrancy structure, used by newlib to 	*/
-/*			support multiple threads of operation.		*/
-/*  ptrdiff_t nbytes	-- number of bytes to add.			*/
-/*  Returns pointer to start of new heap area.				*/
-/*  Note:  This implementation is not thread safe (despite taking a	*/
-/* _reent structure as a parameter).  					*/
-/*  Since _s_r is not used in the current implementation, the following	*/
-/* messages must be suppressed.						*/
-
-void * _sbrk_r(
-	struct _reent *_s_r, 
-	ptrdiff_t nbytes)
+void *_sbrk(ptrdiff_t nbytes)
 {
-    char  *base;		/*  errno should be set to  ENOMEM on error	*/
+    char *base;   /* errno should be set to  ENOMEM on error */
 
-    if (!heap_ptr) {	/*  Initialize if first time through.		*/
-	heap_ptr = __cs3_heap_end;
+    if (!heap_ptr) {        /* Initialize if first time through. */
+        heap_ptr = __cs3_heap_end;
     }
-    base = heap_ptr;	/*  Point to end of heap.			*/
-    heap_ptr += nbytes;	/*  Increase heap.				*/
+    base = heap_ptr;        /* Point to end of heap. */
+    heap_ptr += nbytes;     /* Increase heap. */
 
-    return base;		/*  Return pointer to start of new heap area.	*/
+    return base;            /* Return pointer to start of new heap area. */
 }

@@ -26,7 +26,6 @@ helper.c \
 io.c \
 led.c \
 main.c \
-printf-stdarg.c \
 stats.c \
 uart.c \
 tests.c \
