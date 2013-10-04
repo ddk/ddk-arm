@@ -6,6 +6,7 @@ TOOLCHAIN	= arm-none-eabi
 CC		= $(TOOLCHAIN)-gcc
 CP		= $(TOOLCHAIN)-objcopy
 SIZE	= $(TOOLCHAIN)-size
+CHECKSUM= ./checksum
 
 CFLAGS	+= -Os -ffunction-sections -fdata-sections 
 CFLAGS  += -mthumb -mcpu=cortex-m3 -std=c99 -I./
@@ -72,13 +73,17 @@ all: $(TARGET).bin
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(TARGET).elf: $(OBJ)
-	$(CC) $(LFLAGS) $(CFLAGS) -o $(TARGET).elf $(OBJ) $(CRT0)
+$(TARGET).elf: $(OBJ) $(CRT0)
+	$(CC) $(LFLAGS) $(CFLAGS) $^ -o $@
 
-$(TARGET).bin: $(TARGET).elf
-	$(CP) $(CPFLAGS) $(TARGET).elf $(TARGET).bin
-	$(SIZE) $(TARGET).elf
+$(TARGET).bin: $(TARGET).elf $(CHECKSUM)
+	$(CP) $(CPFLAGS) $< $@
+	$(CHECKSUM) $@
+	$(SIZE) $<
+
+$(CHECKSUM): checksum.c
+	gcc -o $@ $<
 
 clean:
-	rm -f $(OBJ) $(TARGET).elf $(TARGET).bin
+	rm -f $(OBJ) $(CHECKSUM) $(TARGET).elf $(TARGET).bin
 
