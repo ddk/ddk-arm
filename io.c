@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, The DDK Project
+ * Copyright (c) 2013-2014, The DDK Project
  *    Dmitry Nedospasov <dmitry at nedos dot net>
  *    Thorsten Schroeder <ths at modzero dot ch>
  *
@@ -32,10 +32,13 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "portable.h"
-
+#include "uart.h"
 #include "io.h"
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_gpio.h"
+#include "lpc17xx_uart.h"
+
+#define FPGA_UART1_PORT       LPC_UART1
 
 static   PINSEL_CFG_Type PinCfg;
 
@@ -265,14 +268,20 @@ void io_fpga_register_write(uint8_t reg, uint8_t data)
 
 }
 
+volatile extern unsigned char g_u1char_available;
 /* Read 8-bit address "reg" on FPGA */
-/* TODO: Eventually implement return values */
-void io_fpga_register_read(uint8_t reg)
+unsigned char io_fpga_register_read(uint8_t reg)
 {
+    int i = 0;
+    unsigned char  ch = 0;
+
     fpga_dwe_low();
 
     io_fpga_register_setaddress(reg);
 
     fpga_bus_dataclock_toggle();
+    g_u1char_available=0;
+    ch = getchar1();
 
+    return ch;
 }

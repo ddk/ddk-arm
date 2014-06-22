@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, The DDK Project
+ * Copyright (c) 2013-2014, The DDK Project
  *    Dmitry Nedospasov <dmitry at nedos dot net>
  *    Thorsten Schroeder <ths at modzero dot ch>
  *
@@ -85,7 +85,7 @@ void vUART0Task(void *p)
 
     const portTickType xDelay = 10 / portTICK_RATE_MS;
 
-		
+
     ( void ) p;
 
     //puts("sending bytes 00h-ffh:");
@@ -108,10 +108,10 @@ void vUART0Task(void *p)
 
 /* UART1 - Communication with FPGA */
 
-volatile unsigned char g_u1char = 0;
+volatile  unsigned char g_u1char = 0;
 volatile unsigned char g_u1char_available = 0;
 
-unsigned int u1_ack, u1_adr, u1_dat;
+unsigned char u1_ack, u1_adr, u1_dat;
 
 void vUART1Task(void *p)
 {
@@ -376,14 +376,18 @@ void uart1_init(const uint32_t BaudRate, const bool DoubleSpeed)
     // Enable UART Transmit
     // XXX UART_TxCmd((LPC_UART_TypeDef *)FPGA_UART1_PORT, ENABLE);
 
+    g_u1char_available=0;
+
     UART_IntConfig((LPC_UART_TypeDef *)FPGA_UART1_PORT, UART_INTCFG_RBR, ENABLE);
     NVIC_EnableIRQ(UART1_IRQn);
+
 }
+
 
 void UART1_IRQHandler(void)
 {
-    g_u1char_available=0;
-    g_u1char = 0;
+    //g_u1char_available=0;
+    //g_u1char = 0;
 
     unsigned int id = UART_GetIntId((LPC_UART_TypeDef *)FPGA_UART1_PORT);
     unsigned int temp = 0;
@@ -397,9 +401,7 @@ void UART1_IRQHandler(void)
         case 4:
             g_u1char = UART_ReceiveByte((LPC_UART_TypeDef *)FPGA_UART1_PORT);
             g_u1char_available=1;
-            u1_ack = u1_adr;
-            u1_adr = u1_dat;
-            u1_dat = g_u1char;
+
             break;
 
         case 0xc:
@@ -432,16 +434,15 @@ int getchar1_nb(void)
 }
 
 
+
 int getchar1(void)
 {
-   int ch = 0;
+   int ch;
 
    while(!g_u1char_available)
-      ;
+     ;
 
-   ch = g_u1char_available;
-   g_u1char_available = 0;
-
+   ch = g_u1char;
    return ch;
 }
 

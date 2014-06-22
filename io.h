@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, The DDK Project
+ * Copyright (c) 2013-2014, The DDK Project
  *    Dmitry Nedospasov <dmitry at nedos dot net>
  *    Thorsten Schroeder <ths at modzero dot ch>
  *
@@ -111,9 +111,10 @@ void io_fpga_register_write(uint8_t addr, uint8_t data);
 /*!
    Read data from an FPGA register. This function reads from a register address of the FPGA.
    @param[in]  addr  The destination register's address.
-   @param[in]  data  The data byte.
+   @return  data  The data byte.
  */
-void io_fpga_register_read(uint8_t addr);
+//void io_fpga_register_read(uint8_t addr);
+unsigned char io_fpga_register_read(uint8_t reg);
 
 /*!
    FPGA databus testcase.
