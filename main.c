@@ -150,7 +150,7 @@ int main(void)
 
     if(ret != pdTRUE)
     for(;;);
-*/
+
 
     ret = xTaskCreate( vUART1Task,
         _STR "UART1",
@@ -162,6 +162,7 @@ int main(void)
 
     if(ret != pdTRUE)
     for(;;);
+*/
 
 #ifdef WITH_UART2
     ret = xTaskCreate( vUART2Task,

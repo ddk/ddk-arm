@@ -568,10 +568,13 @@ static int __attribute__ ((unused)) prv_cli_data_write (int argc __attribute__ (
 static int __attribute__ ((unused)) prv_cli_data_read (int argc __attribute__ ((unused)), portCHAR **argv __attribute__ ((unused)))
 {
     unsigned char reg = 0;
+    unsigned char c = 0;
 
     reg = strtol(argv[0], NULL, 16) & 0xff;
 
-    io_fpga_register_read(reg);
+    c = io_fpga_register_read(reg);
+    printf("read %x\n", c);
+
     return 0;
 }
 

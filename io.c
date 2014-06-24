@@ -276,12 +276,10 @@ unsigned char io_fpga_register_read(uint8_t reg)
     unsigned char  ch = 0;
 
     fpga_dwe_low();
-
     io_fpga_register_setaddress(reg);
-
     fpga_bus_dataclock_toggle();
     g_u1char_available=0;
-    ch = getchar1();
 
+    ch = getchar1();
     return ch;
 }
