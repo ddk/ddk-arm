@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Copyright (c) 2013, The DDK Project
+# Copyright (c) 2013-2014, The DDK Project
 #    Dmitry Nedospasov <dmitry at nedos dot net>
 #    Thorsten Schroeder <ths at modzero dot ch>
 #
