@@ -35,7 +35,7 @@ import sys
 import io
 
 
-f = open(sys.argv[1])
+f = open(sys.argv[1], 'rb')
 
 dat = f.read()
 datlen = len(dat)
