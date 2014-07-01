@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctl_api.h>
 #include <string.h>
 
 #include "jtag_1149.h"

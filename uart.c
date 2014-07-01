@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <ctl_api.h>
 
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
